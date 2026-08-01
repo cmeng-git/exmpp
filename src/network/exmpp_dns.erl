@@ -61,7 +61,7 @@ srv_lookup(Name, Domain, DefaultPort, Retries) ->
 %% return the domain and the default port as an SRV result as a convenience.
 %% This allows it to work with localhost.
 %%
-%% @spec do_query(Name::string(), Domain::string(),
+%% -spec do_query(Name::string(), Domain::string(),
 %%                DefaultPort::integer()) -> List
 %%       List = [Item]
 %%       Item = {Priority, Weight, Host, Port}
@@ -105,7 +105,7 @@ do_query(Name, Domain, DefaultPort) ->
 %% It is expected that a client try each record in order until a connection
 %% can be made.
 %%
-%% @spec get_c2s(Domain::string(),
+%% -spec get_c2s(Domain::string(),
 %%               DefaultPort::string()) -> List
 %%       List = [Item]
 %%       Item = {Host, Port}
@@ -124,7 +124,7 @@ get_c2s(Domain) ->
 %% It is expected that a server try each record in order until a connection
 %% can be made.
 %%
-%% @spec get_s2s(Domain::string(),
+%% -spec get_s2s(Domain::string(),
 %%               DefaultPort::string()) -> List
 %%       List = [Item]
 %%       Item = {Host, Port}
@@ -143,7 +143,7 @@ get_s2s(Domain) ->
 %% It is expected that a client try each record in order until a connection
 %% can be made.
 %%
-%% @spec get_servers(Server::string(),
+%% -spec get_servers(Server::string(),
 %%                   Proto::string(),
 %%                   Domain::string(),
 %%                   DefaultPort::string()) -> List
@@ -153,8 +153,8 @@ get_s2s(Domain) ->
 %%       Port = integer()
 
 get_servers(Service, Proto, Domain, DefaultPort) ->		  
-    {S1, S2, S3} = now(),
-    random:seed(S1, S2, S3),
+    {S1, S2, S3} = erlang:timestamp(),
+    rand:seed(S1, S2, S3),
     Name = "_" ++ Service ++ "._" ++ Proto ++ "." ++ Domain,
     AddrList = case do_query(Name, Domain, DefaultPort) of
 		   {error, _} ->
@@ -187,7 +187,7 @@ do_sort(AddrList, Acc) ->
 %% @doc Pick a record at random based on priority and weighting.
 %% The picking algorithm is from RFC 2782.
 %%
-%% @spec pick_server(AddrList) -> {ok, {string(), integer()}, Rest}
+%% -spec pick_server(AddrList) -> {ok, {string(), integer()}, Rest}
 %%       AddrList = [{Priority, Weight, Host, Port}]
 %%       Priority = integer()
 %%       Weight = integer()
@@ -209,7 +209,7 @@ pick_server(AddrList) ->
 					       {{P, W, Port, Host, Sum + W}, 
 						Sum + W}
 				       end, 0, List),
-		   R = random:uniform(Sum + 1) - 1,
+		   R = rand:uniform(Sum + 1) - 1,
 		   [Take | _]  = lists:dropwhile(fun ({_, _, _, _, S}) ->
 							 S < R
 						 end, Weighted),

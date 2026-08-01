@@ -141,7 +141,7 @@ register_builtin_engine(Name, Driver, Compress_Methods) ->
 %% Registry handling.
 %% --------------------------------------------------------------------
 
-%% @spec (Name, Driver, Compress_Methods) -> ok
+%% -spec (Name, Driver, Compress_Methods) -> ok
 %%     Name = atom()
 %%     Driver = atom()
 %%     Compress_Methods = [{atom(), Priority}]
@@ -151,7 +151,7 @@ register_builtin_engine(Name, Driver, Compress_Methods) ->
 register_engine(Name, Driver, Compress_Methods) ->
     register_engine(Name, undefined, Driver, Compress_Methods).
 
-%% @spec (Name, Driver_Path, Driver, Compress_Methods) -> ok
+%% -spec (Name, Driver_Path, Driver, Compress_Methods) -> ok
 %%     Name = atom()
 %%     Driver_Path = string()
 %%     Driver = atom()
@@ -171,21 +171,21 @@ register_engine(Name, Driver_Path, Driver, Compress_Methods)
         {error, Exception} -> throw(Exception)
     end.
 
-%% @spec () -> [Compress_Method]
+%% -spec () -> [Compress_Method]
 %%     Compress_Method = atom()
 %% @doc Return the list of supported compress methods.
 
 get_compress_methods() ->
     gen_server:call(?SERVER, get_compress_methods).
 
-%% @spec () -> [Engine_Name]
+%% -spec () -> [Engine_Name]
 %%     Engine_Name = atom()
 %% @doc Return the list of compression engines.
 
 get_engine_names() ->
     gen_server:call(?SERVER, get_engine_names).
 
-%% @spec (Compress_Method) -> [Engine_Name]
+%% -spec (Compress_Method) -> [Engine_Name]
 %%     Compress_Method = atom()
 %%     Engine_Name = atom()
 %% @doc Return the list of compression engines which support the given compress method.
@@ -196,7 +196,7 @@ get_engine_names(Compress_Method) ->
     Engines = gen_server:call(?SERVER, {get_engines, Compress_Method}),
     [E#compress_engine.name || E <- Engines].
 
-%% @spec (Compress_Method) -> [Engine_Name]
+%% -spec (Compress_Method) -> [Engine_Name]
 %%     Compress_Method = atom()
 %%     Engine_Name = atom()
 %% @doc Return the name of the prefered compression engines which support the
@@ -215,7 +215,7 @@ get_prefered_engine(Compress_Method) ->
         [Engine | _] -> Engine
     end.
 
-%% @spec (Engine_Name) -> bool()
+%% -spec (Engine_Name) -> boolean()
 %%     Engine_Name = atom()
 %% @doc Tell if `Engine_Name' is available.
 
@@ -225,7 +225,7 @@ is_engine_available(Engine_Name) ->
         _         -> true
     end.
 
-%% @spec (Engine_Name) -> Driver_Name
+%% -spec (Engine_Name) -> Driver_Name
 %%     Engine_Name = atom()
 %%     Driver_Name = atom()
 %% @doc Return the port driver name associated to the given engine.
@@ -240,7 +240,7 @@ get_engine_driver(Engine_Name) ->
 %% Compression activation.
 %% --------------------------------------------------------------------
 
-%% @spec (Socket_Desc, Options) -> Compress_Socket
+%% -spec (Socket_Desc, Options) -> Compress_Socket
 %%     Socket_Desc = {Mod, Socket}
 %%     Mod = atom()
 %%     Socket = term()
@@ -287,7 +287,7 @@ enable_compression(Socket_Desc, Options) ->
             throw(Exception)
     end.
 
-%% @spec (Compress_Socket) -> Socket_Desc
+%% -spec (Compress_Socket) -> Socket_Desc
 %%     Compress_Socket = compress_socket()
 %%     Socket_Desc = {Mod, Socket}
 %%     Mod = atom()
@@ -336,7 +336,7 @@ get_engine_from_options(Options) ->
 %% Common socket API.
 %% --------------------------------------------------------------------
 
-%% @spec (Compress_Socket, Orig_Packet) -> ok | {error, Reason}
+%% -spec (Compress_Socket, Orig_Packet) -> ok | {error, Reason}
 %%     Compress_Socket = compress_socket()
 %%     Orig_Packet = binary() | list()
 %%     Reason = term()
@@ -351,7 +351,7 @@ send(#compress_socket{socket = Socket_Desc, port = Port}, Packet) ->
             {error, Exception}
     end.
 
-%% @spec (Compress_Socket, Orig_Data) -> {ok, CompressedData} | {error, Reason}
+%% -spec (Compress_Socket, Orig_Data) -> {ok, CompressedData} | {error, Reason}
 %%     Compress_Socket = compress_socket()
 %%     Orig_Data = binary() | list()
 %%     Reason = term()
@@ -366,7 +366,7 @@ send_data(#compress_socket{port = Port}, Data) ->
             {error, Exception}
     end.
 
-%% @spec (Compress_Socket) -> {ok, Orig_Packet} | {error, Reason}
+%% -spec (Compress_Socket) -> {ok, Orig_Packet} | {error, Reason}
 %%     Compress_Socket = compress_socket()
 %%     Orig_Packet = binary() | list()
 %%     Reason = term()
@@ -375,7 +375,7 @@ send_data(#compress_socket{port = Port}, Data) ->
 recv(Compress_Socket) ->
     recv(Compress_Socket, infinity).
 
-%% @spec (Compress_Socket, Timeout) -> {ok, Orig_Packet} | {error, Reason}
+%% -spec (Compress_Socket, Timeout) -> {ok, Orig_Packet} | {error, Reason}
 %%     Compress_Socket = compress_socket()
 %%     Timeout = integer()
 %%     Orig_Packet = binary() | list()
@@ -395,7 +395,7 @@ recv(#compress_socket{socket = Socket_Desc} = Compress_Socket, Timeout) ->
             {error, Exception}
     end.
 
-%% @spec (Compress_Socket, Packet) -> {ok, Orig_Packet} | {error, Reason}
+%% -spec (Compress_Socket, Packet) -> {ok, Orig_Packet} | {error, Reason}
 %%     Compress_Socket = compress_socket()
 %%     Packet = binary() | list()
 %%     Orig_Packet = binary() | list()
@@ -414,7 +414,7 @@ recv_data(#compress_socket{port = Port, packet_mode = Packet_Mode}, Packet) ->
             {error, Exception}
     end.
 
-%% @spec (Compress_Socket, Options) -> {ok, Option_Values} | {error, posix()}
+%% -spec (Compress_Socket, Options) -> {ok, Option_Values} | {error, posix()}
 %%     Compress_Socket = tls_socket()
 %%     Mod = atom()
 %%     Socket = term()
@@ -425,7 +425,7 @@ recv_data(#compress_socket{port = Port, packet_mode = Packet_Mode}, Packet) ->
 getopts(#compress_socket{socket = Socket_Desc}, Options) ->
     exmpp_internals:gen_getopts(Socket_Desc, Options).
 
-%% @spec (Compress_Socket, Options) -> ok | {error, posix()}
+%% -spec (Compress_Socket, Options) -> ok | {error, posix()}
 %%     Compress_Socket = tls_socket()
 %%     Mod = atom()
 %%     Socket = term()
@@ -435,7 +435,7 @@ getopts(#compress_socket{socket = Socket_Desc}, Options) ->
 setopts(#compress_socket{socket = Socket_Desc}, Options) ->
     exmpp_internals:gen_setopts(Socket_Desc, Options).
 
-%% @spec (Compress_Socket) -> {ok, {Address, Port}} | {error, posix()}
+%% -spec (Compress_Socket) -> {ok, {Address, Port}} | {error, posix()}
 %%     Compress_Socket = tls_socket()
 %%     Mod = atom()
 %%     Socket = term()
@@ -446,7 +446,7 @@ setopts(#compress_socket{socket = Socket_Desc}, Options) ->
 peername(#compress_socket{socket = Socket_Desc}) ->
     exmpp_internals:gen_peername(Socket_Desc).
 
-%% @spec (Compress_Socket) -> {ok, {Address, Port}} | {error, posix()}
+%% -spec (Compress_Socket) -> {ok, {Address, Port}} | {error, posix()}
 %%     Compress_Socket = tls_socket()
 %%     Mod = atom()
 %%     Socket = term()
@@ -457,7 +457,7 @@ peername(#compress_socket{socket = Socket_Desc}) ->
 sockname(#compress_socket{socket = Socket_Desc}) ->
     exmpp_internals:gen_sockname(Socket_Desc).
 
-%% @spec (Compress_Socket, Pid) -> ok | {error, Reason}
+%% -spec (Compress_Socket, Pid) -> ok | {error, Reason}
 %%     Compress_Socket = compress_socket()
 %%     Pid = pid()
 %%     Reason = term()
@@ -466,7 +466,7 @@ sockname(#compress_socket{socket = Socket_Desc}) ->
 controlling_process(#compress_socket{socket = Socket_Desc}, Pid) ->
     exmpp_internals:gen_controlling_process(Socket_Desc, Pid).
 
-%% @spec (Compress_Socket) -> ok | {error, Reason}
+%% -spec (Compress_Socket) -> ok | {error, Reason}
 %%     Compress_Socket = compress_socket()
 %%     Reason = term()
 %% @doc Turn off compression and close the underlying socket.
@@ -667,5 +667,5 @@ terminate(_Reason, _State) ->
 %% Documentation / type definitions.
 %% --------------------------------------------------------------------
 
-%% @type compress_socket().
+%% -type compress_socket().
 %% Compression socket obtained with {@link compress/2}.

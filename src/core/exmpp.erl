@@ -43,13 +43,13 @@
 %% Generic utilities.
 %% --------------------------------------------------------------------
 
-%% @spec () -> ok
+%% -spec () -> ok
 %% @doc Start applications which exmpp depends on then start exmpp.
 
 start() ->
     application:start(exmpp).
 
-%% @spec () -> Version
+%% -spec () -> Version
 %%     Version = string()
 %% @doc Return the version of the application.
 

@@ -37,7 +37,7 @@
 %% Binary and string helpers.
 %% --------------------------------------------------------------------
 
-%% @spec (Any) -> String
+%% -spec  (Any) -> String
 %%     Any = binary() | string() | atom() | integer()
 %%     String = string()
 %% @doc Convert any type to its `string()' form.
@@ -46,8 +46,7 @@
 %% {@link erlang:integer_to_list/1} is used. For a binary, {@link
 %% erlang:binary_to_list/1} is used. A string is returned as is.
 
--spec(any_to_list/1 ::
-      (binary() | string() | integer() | atom()) -> string()).
+-spec any_to_list(binary() | string() | integer() | atom()) -> string().
 
 any_to_list(Atom) when is_atom(Atom) ->
     atom_to_list(Atom);
@@ -59,7 +58,7 @@ any_to_list(String) when is_list(String) ->
 any_to_list(Binary) when is_binary(Binary) ->
     binary_to_list(Binary).
 
-%% @spec (Any) -> Binary
+%% -spec  (Any) -> Binary
 %%     Any = binary() | string() | atom() | integer()
 %%     Binary = binary()
 %% @doc Convert any type to its `binary()' form.
@@ -68,8 +67,7 @@ any_to_list(Binary) when is_binary(Binary) ->
 %% {@link erlang:integer_to_list/1} is used. For a string, {@link
 %% erlang:list_to_binary/1} is used. A binary is returned as is.
 
--spec(any_to_binary/1 ::
-      (binary() | string() | integer() | atom()) -> binary()).
+-spec any_to_binary(binary() | string() | integer() | atom()) -> binary().
 
 any_to_binary(Atom) when is_atom(Atom) ->
     any_to_binary(atom_to_list(Atom));
@@ -81,22 +79,21 @@ any_to_binary(String) when is_list(String) ->
 any_to_binary(Binary) when is_binary(Binary) ->
     Binary.
 
-%% @spec strip(Stream) -> Stripped
+%% -spec  strip(Stream) -> Stripped
 %%     Stream = binary() | string()
 %%     Stripped = binary() | string()
 %% @doc Strip leading and trailing blanks.
 %%
 %% @see strip/3.
 
--spec(strip/1 ::
+-spec strip
       (binary()) -> binary();
-      (string()) -> string()
-		       ).
+      (string()) -> string().
 
 strip(Stream) ->
     strip(Stream, both).
 
-%% @spec strip(Stream, Direction) -> Stripped
+%% -spec  strip(Stream, Direction) -> Stripped
 %%     Stream = binary() | string()
 %%     Direction = left | right | both
 %%     Stripped = binary() | string()
@@ -109,10 +106,9 @@ strip(Stream) ->
 %%
 %% @see strip/3.
 
--spec(strip/2 ::
+-spec strip
       (binary(), left | right | both) -> binary();
-      (string(), left | right | both) -> string()
-					    ).
+      (string(), left | right | both) -> string().
 
 strip(Stream, left) ->
     strip_left(Stream);
@@ -152,7 +148,7 @@ strip_right([]) ->
 %% Utils.
 %% --------------------------------------------------------------------
 
-%% @spec () -> ID
+%% -spec  () -> ID
 %%     ID = string()
 %% @doc Generate a random ID.
 %%
@@ -160,12 +156,12 @@ strip_right([]) ->
 %%
 %% @see random_id/1.
 
--spec(random_id/0 :: () -> string()).
+-spec random_id() -> string().
 
 random_id() ->
     random_id("exmpp").
 
-%% @spec (Prefix) -> ID
+%% -spec  (Prefix) -> ID
 %%     Prefix = string()
 %%     ID = string()
 %% @doc Generate a random stanza ID.
@@ -175,10 +171,10 @@ random_id() ->
 %%
 %% The ID is not guaranted to be unique.
 
--spec(random_id/1 :: (string() | undefined) -> string()).
+-spec random_id(string() | undefined) -> string().
 
 random_id(undefined) ->
-    integer_to_list(random:uniform(65536 * 65536));
+    integer_to_list(rand:uniform(65536 * 65536));
 random_id("") ->
     random_id(undefined);
 random_id(Prefix) when is_atom(Prefix) ->

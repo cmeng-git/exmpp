@@ -50,7 +50,7 @@
 -type(process()  :: pid() | atom()).
 -type(callback() ::
       process()                      |
-      {gen_fsm, process()}           |
+      {gen_statem, process()}           |
       {process, process()}           |
       {apply, atom(), atom(), any()} |
       no_callback                    |
@@ -61,7 +61,7 @@
 	  callback             :: callback(),
 	  parser,
 	  xmlstreamstart = old :: new | old,
-	  opened = false       :: bool(),
+	  opened = false       :: boolean(),
 	  wrapper_tagnames = undefined :: undefined | [atom() | string()]
 	 }).
 -type(xmlstream() :: #xml_stream{}).
@@ -77,7 +77,7 @@
 %% Stream parsing, chunk by chunk.
 %% --------------------------------------------------------------------
 
-%% @spec (Callback, Parser) -> Stream
+%% -spec  (Callback, Parser) -> Stream
 %%     Callback = callback()
 %%     Stream = xmlstream()
 %%     Parser = exmpp_xml:xmlparser()
@@ -91,13 +91,13 @@
 %% @see exmpp_xml:start_parser/1.
 %% @see exmpp_xml:reset_parser/2.
 
--spec(start/2 ::
-      (callback(), exmpp_xml:xmlparser()) -> xmlstream()).
+-spec start
+      (callback(), exmpp_xml:xmlparser()) -> xmlstream().
 
 start(Callback, Parser) ->
     start(Callback, Parser, []).
 
-%% @spec (Callback, Parser, Stream_Options) -> Stream
+%% -spec  (Callback, Parser, Stream_Options) -> Stream
 %%     Callback = callback()
 %%     Stream = xmlstream()
 %%     Parser = exmpp_xml:xmlparser()
@@ -113,9 +113,8 @@ start(Callback, Parser) ->
 %% @see exmpp_xml:start_parser/1.
 %% @see exmpp_xml:reset_parser/2.
 
--spec(start/3 ::
-      (callback(), exmpp_xml:xmlparser(), [{xmlstreamstart, new | old}]) ->
-	     xmlstream()).
+-spec start
+      (callback(), exmpp_xml:xmlparser(), [{xmlstreamstart, new | old}]) -> xmlstream().
 
 start(Callback, Parser, Stream_Options) ->
     Callback2 = case Callback of
@@ -135,28 +134,28 @@ start(Callback, Parser, Stream_Options) ->
 		     xmlstreamstart = Stream_Start
 		    }.
 
-%% @spec (Stream) -> New_Stream
+%% -spec  (Stream) -> New_Stream
 %%     Stream = xmlstream()
 %%     New_Stream = xmlstream()
 %% @doc Reset stream and the underlying XML parser.
 
--spec(reset/1 :: (xmlstream()) -> xmlstream()).
+-spec reset(xmlstream()) -> xmlstream().
 
 reset(#xml_stream{parser = Parser} = Stream) ->
     New_Parser = exmpp_xml:reset_parser(Parser),
     Stream#xml_stream{parser = New_Parser, opened = false}.
 
-%% @spec (Stream) -> Parser
+%% -spec  (Stream) -> Parser
 %%     Stream = xmlstream()
 %%     Parser = exmpp_xml:xmlparser()
 %% @doc Return the XML parser used.
 
--spec(get_parser/1 :: (xmlstream()) -> exmpp_xml:xmlparser()).
+-spec get_parser(xmlstream()) -> exmpp_xml:xmlparser().
 
 get_parser(#xml_stream{parser = Parser}) ->
     Parser.
 
-%% @spec (Stream) -> ok | {error, Reason}
+%% -spec  (Stream) -> ok | {error, Reason}
 %%     Stream = xmlstream()
 %% @doc Close a stream handler.
 %%
@@ -169,12 +168,12 @@ get_parser(#xml_stream{parser = Parser}) ->
 %%
 %% @see get_parser/1.
 
--spec(stop/1 :: (xmlstream()) -> ok).
+-spec stop(xmlstream()) -> ok.
 
 stop(_Stream) ->
     ok.
 
-%% @spec (Stream, Data) -> {ok, New_Stream} | {ok, New_Stream, Events} | {error, Reason}
+%% -spec  (Stream, Data) -> {ok, New_Stream} | {ok, New_Stream, Events} | {error, Reason}
 %%     Stream = xmlstream()
 %%     Data = string() | binary()
 %%     New_Stream = xmlstream()
@@ -187,10 +186,10 @@ stop(_Stream) ->
 %%
 %% Potential events are described by the {@link xmlstreamevent()} type.
 
--spec(parse/2 ::
+-spec parse
       (xmlstream(), binary() | string()) ->
 	     {ok, xmlstream()} | {ok, xmlstream(), [xmlstreamevent()]} |
-		 {error, any()}).
+		 {error, any()}.
 
 parse(#xml_stream{parser = Parser} = Stream, Data) ->
     try exmpp_xml:parse(Parser, Data) of
@@ -284,9 +283,9 @@ process_elements2(Stream, [XML_Element | Rest], Events) ->
 process_elements2(Stream, [], Events) ->
     {ok, Stream, lists:reverse(Events)}.
 
-send_events(#xml_stream{callback = {gen_fsm, Pid}} = Stream,
+send_events(#xml_stream{callback = {gen_statem, Pid}} = Stream,
 	    [Event | Rest]) ->
-    case catch gen_fsm:send_event(Pid, Event) of
+    case catch gen_statem:cast(Pid, Event) of
         {'EXIT', Reason} ->
             {error, {'EXIT', Reason}};
         ok ->
@@ -313,18 +312,18 @@ send_events(#xml_stream{callback = {apply, {M, F, Extra}}} = Stream,
 send_events(#xml_stream{callback = no_callback} = Stream, Events) ->
     {ok, Stream, Events};
 send_events(Stream, [Event | Rest]) ->
-    error_logger:info_msg("~s:send_event/2: Event: ~p~n", [?MODULE, Event]),
+    error_logger:info_msg("~s:at send_events/2: Event: ~p~n", [?MODULE, Event]),
     send_events(Stream, Rest);
 send_events(Stream, []) ->
     {ok, Stream}.
 
-%% @spec (Stream, CallBack) -> NewStream
+%% -spec  (Stream, CallBack) -> NewStream
 %%     Stream = xmlstream()
 %%     CallBack = callback()
 %%     NewStream = xmlstream()
 %% @doc Change callback of the stream.
 
--spec(change_callback/2 :: (xmlstream(), callback()) -> xmlstream()).
+-spec change_callback(xmlstream(), callback()) -> xmlstream().
 
 change_callback(Stream, CallBack) ->
     NewCallBack = if is_pid(CallBack) ->
@@ -338,7 +337,7 @@ change_callback(Stream, CallBack) ->
 %% Document parsing.
 %% --------------------------------------------------------------------
 
-%% @spec (Data) -> [XML_Element]
+%% -spec  (Data) -> [XML_Element]
 %%     Data = string() | binary()
 %%     XML_Element = exmpp_xml:xmlel() | exmpp_xml:xmlel_old() | exmpp_xml:xmlcdata()
 %% @doc Parse the given data.
@@ -348,14 +347,14 @@ change_callback(Stream, CallBack) ->
 %% @see exmpp_xml:start_parser/0.
 %% @see exmpp_xml:parse_document/1.
 
--spec(parse_element/1 ::
+-spec parse_element
       (binary() | string()) ->
-	     [xmlnode() | xmlendtag()]).
+	     [xmlnode() | xmlendtag()].
 
 parse_element(Data) ->
     parse_element(Data, []).
 
-%% @spec (Data, Parser_Options) -> [XML_Element]
+%% -spec  (Data, Parser_Options) -> [XML_Element]
 %%     Data = string() | binary()
 %%     Parser_Options = [exmpp_xml:xmlparseroption()]
 %%     XML_Element = exmpp_xml:xmlel() | exmpp_xml:xmlel_old() | exmpp_xml:xmlcdata()
@@ -366,9 +365,9 @@ parse_element(Data) ->
 %% @see exmpp_xml:start_parser/1.
 %% @see exmpp_xml:parse_document/2.
 
--spec(parse_element/2 ::
+-spec parse_element
       (binary() | string(), [exmpp_xml:xmlparseroption()]) ->
-	     [xmlnode() | xmlendtag()]).
+	     [xmlnode() | xmlendtag()].
 
 parse_element(Data, Parser_Options) ->
     case exmpp_xml:parse_document(Data, Parser_Options) of
@@ -380,14 +379,14 @@ parse_element(Data, Parser_Options) ->
             XML_Element
     end.
 
-%% @spec (Stream, TagNames) -> New_Stream
+%% -spec  (Stream, TagNames) -> New_Stream
 %%     Stream = xmlstream()
 %%     TagNames =  [atom()|string()]
 %%     New_Stream = xmlstream()
 %% @doc Reset stream and the underlying XML parser.
 %% TODO: Support wrapper tag match on both namespace and name ?
 
--spec(set_wrapper_tagnames/2 :: (xmlstream(), [atom()|string()]) -> xmlstream()).
+-spec set_wrapper_tagnames(xmlstream(), [atom()|string()]) -> xmlstream().
 
 set_wrapper_tagnames(Stream, TagNames) when is_list(TagNames) ->
     Stream#xml_stream{wrapper_tagnames = TagNames}.
@@ -396,8 +395,8 @@ set_wrapper_tagnames(Stream, TagNames) when is_list(TagNames) ->
 %% Documentation / type definitions.
 %% --------------------------------------------------------------------
 
-%% @type callback() = Gen_Fsm | Process | Function | No_Callback | Log
-%%     Gen_Fsm = {gen_fsm, Pid_or_Name}
+%% -type callback() = Gen_Fsm | Process | Function | No_Callback | Log
+%%     Gen_Statem = {gen_statem, Pid_or_Name}
 %%     Pid_or_Name = pid() | atom()
 %%     Process = {process, pid()} | pid()
 %%     Function = {apply, {Mod, Func, Extra}}
@@ -410,9 +409,9 @@ set_wrapper_tagnames(Stream, TagNames) when is_list(TagNames) ->
 %%
 %% In case of a `Gen_Fsm', the call will be:
 %% ```
-%% gen_fsm:send_event(Pid_or_Name, Event)
+%% gen_statem:send_event(Pid_or_Name, Event))
 %% '''
-%% See {@link gen_fsm} documentation for more informations.
+%% See {@link gen_statem} documentation for more informations.
 %%
 %% In case of a `Process', the event is sent using the Erlang `!' operator.
 %%
@@ -432,11 +431,11 @@ set_wrapper_tagnames(Stream, TagNames) when is_list(TagNames) ->
 %% (the `Log' case), the event will be logged with
 %% {@link error_logger:info_msg/2}.
 
-%% @type xmlstream().
+%% -type xmlstream().
 %% Handler for the opened stream, initialized with a call to {@link
 %% start/0} or {@link start/1}.
 
-%% @type xmlstreamevent() = Stream_Start | Stream_Element | Stream_End | Error
+%% -type xmlstreamevent() = Stream_Start | Stream_Element | Stream_End | Error
 %%     Stream_Start = {xmlstreamstart, XML_Element} | {xmlstreamstart, Name, Attrs}
 %%     Stream_Element = {xmlstreamelement, XML_Element}
 %%     Stream_End = {xmlstreamend, XML_End_Tag}

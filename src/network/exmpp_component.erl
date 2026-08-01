@@ -12,6 +12,7 @@
 %% under the License.
 
 %% @author Ery Lee<ery.lee@gmail.com>
+%% @author Eng Chong Meng <cmeng.gm@gmail.com>
 
 %% @doc
 %% The module <strong>{@module}</strong> implements xep-0114 component.
@@ -22,7 +23,7 @@
 %%
 
 -module(exmpp_component).
--behaviour(gen_fsm).
+-behaviour(gen_statem).
 
 %% XMPP Component API:
 -export([start/0, start_link/0, start_debug/0, stop/1]).
@@ -33,22 +34,20 @@
      send_packet/2,
 	 set_controlling_process/2]).
 
-%% gen_fsm callbacks
+%% gen_statem callbacks
 -export([init/1,
 	 code_change/4,
-	 handle_info/3,
-	 handle_event/3,
-	 handle_sync_event/4,
-	 terminate/3]).
+	 terminate/3,
+	 callback_mode/0]).
 
-%% States
+%% States functions
 -export([setup/3, 
-	 wait_for_stream/2, wait_for_stream/3,
+	 wait_for_stream/3,
 	 stream_opened/2, stream_opened/3,
 	 stream_error/2, stream_error/3,
 	 stream_closed/2, stream_closed/3,
-	 wait_for_handshake_result/2,
-	 session_established/2, session_established/3
+	 wait_for_handshake_result/3,
+	 session_established/3
 	]).
 
 -include("exmpp.hrl").
@@ -64,7 +63,7 @@
       stream_id = false,
 	  stream_error,
 	  receiver_ref,
-	  from_pid           %% Use by gen_fsm to handle postponed replies
+	  from_pid           %% Use by gen_statem to handle postponed replies
 	 }).
 
 %% This timeout should match the connect timeout
@@ -75,19 +74,19 @@
 %%====================================================================
 %%--------------------------------------------------------------------
 %% Function: start_link() -> ok,Pid} | ignore | {error,Error}
-%% Description:Creates a gen_fsm process which calls Module:init/1 to
+%% Description:Creates a gen_statem process which calls Module:init/1 to
 %% initialize. To ensure a synchronized start-up procedure, this function
 %% does not return until Module:init/1 has returned.
 %%--------------------------------------------------------------------
 %% Start the Component (used to get a reference):
 start() ->
-    case gen_fsm:start(?MODULE, [self()], []) of
+    case gen_statem:start(?MODULE, [self()], []) of
 	{ok, PID} -> PID;
 	{error, Reason} -> erlang:error({error, Reason})
     end.
 %% Start the Component (used to get a reference):
 start_link() ->
-    case gen_fsm:start_link(?MODULE, [self()], []) of
+    case gen_statem:start_link(?MODULE, [self()], []) of
 	{ok, PID} -> PID;
 	{error, Reason} -> erlang:error({error, Reason})
     end.
@@ -95,14 +94,14 @@ start_link() ->
 %% Start the Component in debug mode
 %% (trace events)
 start_debug() ->
-    case gen_fsm:start(?MODULE, [self()], [{debug,[trace]}]) of
+    case gen_statem:start(?MODULE, [self()], [{debug,[trace]}]) of
 	{ok, PID} -> PID;
 	{error, Reason} -> erlang:error({error, Reason})
     end.
 
 %% Close Component and disconnect
 stop(Component) ->
-    catch gen_fsm:sync_send_all_state_event(Component, stop),
+    catch gen_statem:call(Component, stop),
     ok.
 
 %% Set authentication mode to basic (password)
@@ -110,7 +109,7 @@ auth(Component, Domain, Password)
   when is_pid(Component),
        is_list(Domain),
        is_list(Password) ->
-    gen_fsm:sync_send_event(Component, {set_auth, Domain, Password}).
+    gen_statem:call(Component, {set_auth, Domain, Password}).
 
 %% Initiate standard TCP XMPP server connection
 %% If the domain is not passed we expect to find it in the authentication
@@ -120,8 +119,7 @@ connect(Component, Server, Port)
   when is_pid(Component),
        is_list(Server),
        is_integer(Port) ->
-    case gen_fsm:sync_send_event(Component, {connect_tcp, Server, Port},
-				 ?TIMEOUT) of
+    case gen_statem:call(Component, {connect_tcp, Server, Port}, ?TIMEOUT) of
 	Error when is_tuple(Error) -> erlang:throw(Error);
 	StreamId -> StreamId
     end.
@@ -129,72 +127,69 @@ connect(Component, Server, Port)
 %% Handshake
 %% Returns ok
 handshake(Component) when is_pid(Component) ->
-    case gen_fsm:sync_send_event(Component, {handshake}) of
-	ok -> ok;
-	Error when is_tuple(Error) -> erlang:throw(Error)
+    case gen_statem:call(Component, {handshake}) of
+		ok -> ok;
+		Error when is_tuple(Error) -> erlang:throw(Error)
     end.
 
 %% Send any exmpp formatted packet
 send_packet(Component, Packet) when is_pid(Component) ->
-    case gen_fsm:sync_send_event(Component, {send_packet, Packet}) of
+    case gen_statem:call(Component, {send_packet, Packet}) of
 	Error when is_tuple(Error) -> erlang:throw(Error);
         Id -> Id
     end.
 
 set_controlling_process(Component,Client) when is_pid(Component), is_pid(Client) ->
-    case gen_fsm:sync_send_all_state_event(Component, {set_controlling_process, Client}) of
+    case gen_statem:call(Component, {set_controlling_process, Client}) of
 	Error when is_tuple(Error) -> erlang:throw(Error);
         Id -> Id
     end.
 
 %%====================================================================
-%% gen_fsm callbacks
+%% gen_statem callbacks
 %%====================================================================
 init([Pid]) ->
     inets:start(),
     exmpp_stringprep:start(),
-    {A1,A2,A3} = now(),
-    random:seed(A1, A2, A3),
+
+    {A1,A2,A3} = erlang:timestamp(),
+    rand:seed(exs1024, {A1, A2, A3}),
     {ok, setup, #state{client_pid=Pid}}.
 
-handle_event(tcp_closed, _StateName, State) ->
-    {stop, tcp_closed, State};
+%% In mode state_functions, the state transition rules: 
+%% StateName(EventType, EventContent, Data) ->
+%%    ... code for actions here ...
+%%    {next_state, NewStateName, NewData}.
 
-handle_event(_Event, StateName, State) ->
-    {next_state, StateName, State}.
+%% In mode handle_event_function
+%% handle_event(EventType, EventContent, State, Data) ->
+%%    ... code for actions here ...
+%%    {next_state, NewState, NewData}
 
-handle_sync_event(stop, _From, _StateName, State) ->
-    Reply = ok,
-    {stop, normal, Reply, State};
-handle_sync_event({set_controlling_process,Client}, _From, StateName, State) ->
-    Reply = ok,
-    {reply,Reply,StateName,State#state{client_pid=Client}};
-handle_sync_event(_Event, _From, StateName, State) ->
-    Reply = ok,
-    {reply, Reply, StateName, State}.
-
-handle_info(_Info, StateName, State) ->
-    {next_state, StateName, State}.
-
+%% Use a single handler for all states.
+%% Define a separate handler function for each state.
+callback_mode() ->
+    state_functions.
+%% [state_functions | handle_event_function].
 
 terminate(Reason, _StateName, #state{connection_ref = undefined,
 				     stream_ref = undefined,
 				     from_pid=From}) ->
-    reply(Reason, From),
+    reply(From, Reason),
     ok;
 terminate(Reason, _StateName, #state{connection_ref = undefined,
 				     stream_ref = StreamRef,
 				     from_pid=From}) ->
     exmpp_xmlstream:stop(StreamRef),
     exmpp_xml:stop_parser(exmpp_xmlstream:get_parser(StreamRef)),
-    reply(Reason, From),
+    reply(From, Reason),
     ok;
 terminate(Reason, _StateName, #state{connection_ref = ConnRef,
 				     connection = Module,
 				     stream_ref = undefined,
 				     from_pid=From}) ->
     Module:close(ConnRef),
-    reply(Reason, From),
+    reply(From, Reason),
     ok;
 terminate(Reason, _StateName, #state{connection_ref = ConnRef,
 				     connection = Module,
@@ -203,15 +198,15 @@ terminate(Reason, _StateName, #state{connection_ref = ConnRef,
 				     from_pid=From}) ->
     exmpp_xmlstream:stop(StreamRef),
     exmpp_xml:stop_parser(exmpp_xmlstream:get_parser(StreamRef)),
-    Module:close(ConnRef, ReceiverRef),
-    reply(Reason, From),
+    Module:close(ConnRef, ReceiverRef),  %stop receiving data from socket
+    reply(From, Reason),
     ok.
 
-%% Send gen_fsm reply if needed
-reply(_Reply, undefined) ->
+%% Send gen_statem reply if needed
+reply(undefined, _Reply) ->
     ok;
-reply(Reply, {P, _} = From) when is_pid(P) ->
-    gen_fsm:reply(From, Reply);
+reply(To, Reply) when is_pid(To) ->
+    gen_statem:reply(To, Reply);
 reply(_, _) ->
     ok.
 
@@ -224,19 +219,21 @@ code_change(_OldVsn, StateName, State, _Extra) ->
     {ok, StateName, State}.
 
 %%====================================================================
-%% States
+%% State Functions
 %%====================================================================
 %% ---------------------------
 %% Setup state: Configuration
 
 %% Define JID and authentication method
-setup({set_auth, Domain, Password}, _From, State) ->
-    {reply, ok, setup, State#state{auth_method ={Domain, Password}}};
-setup({connect_tcp, Host, Port}, From, State) ->
+setup({_, To}, {set_auth, Domain, Password}, State) ->
+  gen_statem:reply(To, ok),
+  {next_state, setup, State#state{auth_method={Domain, Password}}};
+
+setup({_, To}=From, {connect_tcp, Host, Port}, State) ->
     case State#state.auth_method of
 	undefined ->
-	    {reply, {connect_error,
-		     authentication_or_domain_undefined}, setup, State};
+	    gen_statem:reply(To, {connect_error, authentication_or_domain_undefined}),
+  		{next_state, setup, State};
 	_Other ->
 	    connect(exmpp_socket, {Host, Port, []}, From, State)
     end.
@@ -261,7 +258,7 @@ setup({connect_tcp, Host, Port}, From, State) ->
         #xmlstreamelement{element=#xmlel{
 			    ns='http://etherx.jabber.org/streams',
 			    name=error,
-			    children=[#xmlcdata{cdata=  <<"Disconnected">> }]}}).
+			    children=[#xmlcdata{cdata=<<"Disconnected">> }]}}).
 
 %% Standard end of stream:
 -define(streamend,
@@ -270,30 +267,24 @@ setup({connect_tcp, Host, Port}, From, State) ->
 			name=stream}}).
 
 %% We cannot receive API call in this state
-wait_for_stream(_Event, _From, State) ->
-    {reply, {error, busy_connecting_to_server}, wait_for_stream, State}.
-%% TODO: Check that we receive a client stream. Need change in the
-%% parsing library.
-wait_for_stream(Start = ?stream, State = #state{connection = _Module,
-						connection_ref = _ConnRef,
-						auth_method = _Auth,
-						from_pid = From}) ->
-    %% Get StreamID
+wait_for_stream(_Event, Start=?stream, State=#state{from_pid=To}) ->
+    gen_statem:reply(To, ok),
+    %% Get StreamID from Start
     StreamId = exmpp_xml:get_attribute_as_list(Start#xmlstreamstart.element, <<"id">>, ""),
-    gen_fsm:reply(From, StreamId),
-    {next_state, stream_opened, State#state{from_pid=undefined,
-					    stream_id = StreamId}}.
+    {next_state, stream_opened, State#state{from_pid=undefined, stream_id=StreamId}}.
 
 %% ---------------------------
 %% Between stream opening and Component opening
 
 %% Supported user commands at this stage:
 %% handshake and register
-stream_opened({handshake}, _From,State=#state{auth_method=undefined}) ->
-    {reply, {error, auth_method_undefined}, stream_opened, State};
-stream_opened({handshake}, From, State=#state{connection = Module,
-					  connection_ref = ConnRef,
-                      stream_id = StreamId, auth_method = {_Domain, Password}}) ->
+stream_opened({_, To}, {handshake}, State=#state{auth_method=undefined}) ->
+    gen_statem:reply(To, {error, auth_method_undefined}),
+    {next_state, stream_opened, State};
+stream_opened({_, From}, {handshake},
+	State=#state{connection=Module, connection_ref=ConnRef,
+    	stream_id=StreamId, auth_method={_Domain, Password}}) ->
+    %% error_logger:info_msg("I am here in handShake ~p~n~p~n~p~n",[From, handshake, State]),
     %% Retrieve supported authentication methods:
     %% TODO: Do different thing if we use basic or SASL auth
     %% For now, we consider everything is legacy (basic)
@@ -305,91 +296,96 @@ stream_opened({handshake}, From, State=#state{connection = Module,
 %% We can define update handshake informations after we are connected to
 %% the XMPP server:
 %% Define JID and authentication method
-stream_opened({set_auth, Domain, Password}, _From, State) ->
+stream_opened(_From, {set_auth, Domain, Password}, State) ->
     {reply, ok, stream_opened, State#state{auth_method= {Domain, Password}}};
-stream_opened({presence, _Status, _Show}, _From, State) ->
+stream_opened(_From, {presence, _Status, _Show}, State) ->
     {reply, {error, not_session_established}, setup, State};
 %% We allow to send packet here to give control to the developer on all packet
-%% send to the server. The developer can implements his own login management
-%% code.
+%% send to the server. The developer can implements his own login management code.
 %% If the packet is an iq set or get:
 %% We check that there is a valid id and return it to match the reply
-stream_opened({send_packet, Packet}, _From,
-	      State = #state{connection = Module,
-			     connection_ref = ConnRef}) ->
+stream_opened({_, To}, {send_packet, Packet}, 
+	      State = #state{connection = Module, connection_ref = ConnRef}) ->
     Id = send_packet(Packet, Module, ConnRef),
-    {reply, Id, stream_opened, State}.
+    gen_statem:reply(To, Id),
+	{next_state, stream_opened, State}.
 
 %% Process incoming
 %% Dispatch incoming messages
-stream_opened(#xmlstreamelement{element=#xmlel{name=message, attrs=Attrs}=MessageElement}, State = #state{connection = _Module, connection_ref = _ConnRef}) ->
+stream_opened(#xmlstreamelement{element=#xmlel{name=message, attrs=Attrs}=MessageElement},
+	    State=#state{connection=_Module, connection_ref=_ConnRef}) ->
     process_message(State#state.client_pid, Attrs, MessageElement),
     {next_state, stream_opened, State};
 %% Dispach IQs from server
 stream_opened(#xmlstreamelement{element=#xmlel{name=iq, attrs=Attrs}=IQElement}, State) ->
     process_iq(State#state.client_pid, Attrs, IQElement),
     {next_state, stream_opened, State};
-%% Handle stream error: We keep the process alive to be able
-%%                      return errors
+%% Handle stream error: We keep the process alive to be able return errors
 stream_opened(?streamerror, State) ->
     {next_state, stream_error, State#state{stream_error=Reason}};
 %% Handle end of stream
 stream_opened(?streamend, State) ->
     {next_state, stream_closed, State}.
 
-stream_error(_Signal, _From, State) ->
-    {reply, {stream_error, State#state.stream_error}, stream_error, State}.
+stream_error(_Signal, {_, To}, State) ->
+    gen_statem:reply(To, {stream_error, State#state.stream_error}),
+	{next_state, stream_error, State}.
 stream_error(?streamend, State) ->
     {next_state, stream_closed, State};
 stream_error(_Signal, State) ->
     {next_state, stream_error, State}.
 
-stream_closed(_Signal, _From, State = #state{stream_error = undefined}) ->
-    {reply, {stream_closed, undefined}, stream_closed, State};
-stream_closed(_Signal, _From, State) ->
-    {reply, {stream_error, State#state.stream_error}, stream_closed, State}.
+stream_closed(_Signal, {_, To}, State = #state{stream_error = undefined}) ->
+    gen_statem:reply(To, {stream_closed, undefined}),
+	{next_state, stream_closed, State};
+
+stream_closed(_Signal, {_, To}, State) ->
+    gen_statem:reply(To, {stream_error, State#state.stream_error}),
+	{next_state, stream_closed, State}.
 stream_closed(_Signal, State) ->
     {next_state, stream_closed, State}.
 
-wait_for_handshake_result(#xmlstreamelement{element=#xmlel{name=handshake}} , State=#state{from_pid = From}) ->
+wait_for_handshake_result(_Event, #xmlstreamelement{element=#xmlel{name=handshake}},
+		State=#state{from_pid=From}) ->
+    %% error_logger:info_msg("I am in wait_for_handshake ~p~n~p~n~p~n",[Event, Start, State]),
     case From of
         undefined -> ok;
-        From -> gen_fsm:reply(From, ok)
+        From -> gen_statem:reply(From, ok)
     end,
 	{next_state, session_established, State};
 
 %% Reason comes from streamerror macro
-wait_for_handshake_result(?streamerror, State) ->
+wait_for_handshake_result(_Event, ?streamerror, State) ->
     {stop, {error, Reason}, State}.
 
 %% ---
 %% Send packets
 %% If the packet is an iq set or get:
 %% We check that there is a valid id and return it to match the reply
-session_established({send_packet, Packet}, _From,
-	  State = #state{connection = Module,
-			 connection_ref = ConnRef}) ->
+session_established(_Event, {send_packet,Packet},
+	  State = #state{connection=Module, connection_ref=ConnRef, from_pid=To}) ->
     Id = send_packet(Packet, Module, ConnRef),
-    {reply, Id, session_established, State}.
+    gen_statem:reply(To, Id),
+	{next_state, session_established, State};
 
 %% ---
 %% Receive packets
 %% When logged in we dispatch the event we receive
 %% Dispatch incoming presence packets
-session_established(#xmlstreamelement{element=#xmlel{name=presence, attrs=Attrs}=PresenceElement},
-	  State = #state{connection = _Module, connection_ref = _ConnRef}) ->
+session_established(_Event, #xmlstreamelement{element=#xmlel{name=presence, attrs=Attrs}=PresenceElement},
+	  State = #state{connection=_Module, connection_ref=_ConnRef}) ->
     process_presence(State#state.client_pid, Attrs, PresenceElement),
     {next_state, session_established, State};
 %% Dispatch incoming messages
-session_established(#xmlstreamelement{element=#xmlel{name=message, attrs=Attrs}=MessageElement}, State = #state{connection = _Module, connection_ref = _ConnRef}) ->
+session_established(_Event, #xmlstreamelement{element=#xmlel{name=message, attrs=Attrs}=MessageElement}, State = #state{connection = _Module, connection_ref = _ConnRef}) ->
     process_message(State#state.client_pid, Attrs, MessageElement),
     {next_state, session_established, State};
 %% Dispach IQs from server
-session_established(#xmlstreamelement{element=#xmlel{name=iq, attrs=Attrs}=IQElement}, State) ->
+session_established(_Event, #xmlstreamelement{element=#xmlel{name=iq, attrs=Attrs}=IQElement}, State) ->
     process_iq(State#state.client_pid, Attrs, IQElement),
     {next_state, session_established, State};
 %% Process unexpected packet
-session_established(_Packet, State) ->
+session_established(_Event, _Packet, State) ->
     %% log it or do something better
     io:format("!!!ALERT!!! Unknown packet:~p~p~n", [_Packet, State]),
     {next_state, session_established, State}.
@@ -405,17 +401,15 @@ session_established(_Packet, State) ->
 %% Connect to server
 connect(Module, Params, From, State=#state{auth_method = {Domain, _P}}) ->
     connect(Module, Params, Domain, From, State).
-connect(Module, Params, Domain, From, #state{client_pid=_ClientPid} = State) ->
+connect(Module, Params, Domain, {_, To}, #state{client_pid=_ClientPid} = State) ->
     try start_parser() of
 	StreamRef ->
 	    try Module:connect(self(), StreamRef, Params) of
 		{ConnRef, ReceiverRef} ->
 		    %% basic (legacy) authent: we do not use version
 		    %% 1.0 in stream:
-		    ok = Module:send(ConnRef,
-				     exmpp_stream:opening(Domain,
-							  ?NS_COMPONENT_ACCEPT,
-							  {0,0})),
+		    ok = Module:send(ConnRef, exmpp_stream:opening(Domain,
+				?NS_COMPONENT_ACCEPT, {0,0})),
 		    %% TODO: Add timeout on wait_for_stream to return
 		    %% meaningfull error.
 		    {next_state, wait_for_stream,
@@ -424,20 +418,19 @@ connect(Module, Params, Domain, From, #state{client_pid=_ClientPid} = State) ->
 				 connection_ref = ConnRef,
 				 stream_ref = StreamRef,
 				 receiver_ref = ReceiverRef,
-				 from_pid = From}}
+				 from_pid = To}}
 	    catch
 		Error ->
 		    exmpp_xmlstream:stop(StreamRef),
-		    %% We do not stop here, because the developer
-		    %% might want to start a connection using another
-		    %% transport
-		    {reply, Error, setup,
-		     State#state{stream_ref = undefined,
-				 from_pid = From}}
+		    %% We do not stop here, because the developer might
+		    %% want to start a connection using another transport
+		    gen_statem:reply(To, Error),
+			{next_state, setup, State#state{stream_ref = undefined, from_pid = To}}
 	    end
     catch
 	Error ->
-	    {reply, Error, setup, State}
+	    gen_statem:reply(To, Error),
+		{next_state, setup, State}
     end.
 
 %% Define parser options
@@ -453,7 +446,7 @@ connect(Module, Params, Domain, From, #state{client_pid=_ClientPid} = State) ->
 
 %% Start parser and return stream reference
 start_parser() ->
-    exmpp_xmlstream:start({gen_fsm, self()},
+    exmpp_xmlstream:start({gen_statem, self()},
                           exmpp_xml:start_parser(?PARSER_OPTIONS),
                           [{xmlstreamstart,new}]).
 

@@ -19,7 +19,7 @@
 	 mech_step/2]).
 
 
-%% @type mechstate() = {state, Step, Nonce, Cnonce, Username, Password, AuthzId, GetPassword, CheckPassword, AuthModule, Host, Domain}
+%% -type mechstate() = {state, Step, Nonce, Cnonce, Username, Password, AuthzId, GetPassword, CheckPassword, AuthModule, Host, Domain}
 %%     Step = 1 | 2 | 3 | 4 | 5
 %%     Nonce = string()
 %%     Cnonce = string()
@@ -34,7 +34,7 @@
 -record(state, {step, nonce, cnonce, username, password, authzid, get_password, check_password, auth_module,
 		host, domain, rspauth}).
 
-%% @spec (Host, GetPassword, CheckPassword, CheckPasswordDigest) -> {ok, State}
+%% -spec (Host, GetPassword, CheckPassword, CheckPasswordDigest) -> {ok, State}
 %%     Host = string()
 %%     GetPassword = function()
 %%     CheckPassword = function()
@@ -43,7 +43,7 @@
 mech_new(Host, GetPassword, _CheckPassword, CheckPasswordDigest) ->
     crypto:start(),
     {ok, #state{step = 1,
-                nonce = hex(integer_to_list(random:uniform(65536*65536))),
+                nonce = hex(integer_to_list(rand:uniform(65536*65536))),
 		host = Host,
 		get_password = GetPassword,
 		check_password = CheckPasswordDigest}}.
@@ -51,7 +51,7 @@ mech_new(Host, GetPassword, _CheckPassword, CheckPasswordDigest) ->
 mech_client_new(Username, Host, Domain, Password) ->
     crypto:start(),
     {ok, #state{step = 2,
-                cnonce = hex(integer_to_list(random:uniform(18446744073709551616))),
+                cnonce = hex(integer_to_list(rand:uniform(18446744073709551616))),
                 username = Username,
 		host = Host,
 		domain = Domain,
@@ -59,7 +59,7 @@ mech_client_new(Username, Host, Domain, Password) ->
                 authzid = ""
 		}}.
 
-%% @spec (State, ClientIn) -> Ok | Continue | Error
+%% -spec (State, ClientIn) -> Ok | Continue | Error
 %%     State = mechstate()
 %%     ClientIn = string()
 %%     Ok = {ok, Props}
@@ -179,7 +179,7 @@ mech_step(#state{step = 5,
 mech_step(_A, _B) ->
     {error, 'bad-protocol'}.
 
-%% @spec (S) -> [{Key, Value}] | bad
+%% -spec (S) -> [{Key, Value}] | bad
 %%     S = string()
 %%     Key = string()
 %%     Value = string()
@@ -234,7 +234,7 @@ parse4([], Key, Val, Ts) ->
     parse1([], "", [{Key, lists:reverse(Val)} | Ts]).
 
 
-%% @spec (DigestURICase, JabberHost) -> bool()
+%% -spec (DigestURICase, JabberHost) -> boolean()
 %%     DigestURICase = string()
 %%     JabberHost = string()
 %%
@@ -281,7 +281,7 @@ hex([N | Ns], Res) ->
 	     digit_to_xchar(N div 16) | Res]).
 
 
-%% @spec (KeyVals, User, Passwd, Nonce, AuthzId, A2Prefix) -> string()
+%% -spec (KeyVals, User, Passwd, Nonce, AuthzId, A2Prefix) -> string()
 %%     KeyVals = [{Key, Value}]
 %%         Key = string()
 %%         Value = string()
@@ -300,11 +300,11 @@ response(KeyVals, User, Passwd, Nonce, AuthzId, A2Prefix) ->
     A1 = case AuthzId of
 	     "" ->
 		 binary_to_list(
-		   crypto:md5(User ++ ":" ++ Realm ++ ":" ++ Passwd)) ++
+		   crypto:hash(md5, User ++ ":" ++ Realm ++ ":" ++ Passwd)) ++
 		     ":" ++ Nonce ++ ":" ++ CNonce;
 	     _ ->
 		 binary_to_list(
-		   crypto:md5(User ++ ":" ++ Realm ++ ":" ++ Passwd)) ++
+		   crypto:hash(md5, User ++ ":" ++ Realm ++ ":" ++ Passwd)) ++
 		     ":" ++ Nonce ++ ":" ++ CNonce ++ ":" ++ AuthzId
 	 end,
     A2 = case QOP of
@@ -314,8 +314,8 @@ response(KeyVals, User, Passwd, Nonce, AuthzId, A2Prefix) ->
 		 A2Prefix ++ ":" ++ DigestURI ++
 		     ":00000000000000000000000000000000"
 	 end,
-    T = hex(binary_to_list(crypto:md5(A1))) ++ ":" ++ Nonce ++ ":" ++
+    T = hex(binary_to_list(crypto:hash(md5, A1))) ++ ":" ++ Nonce ++ ":" ++
 	NC ++ ":" ++ CNonce ++ ":" ++ QOP ++ ":" ++
-	hex(binary_to_list(crypto:md5(A2))),
-    hex(binary_to_list(crypto:md5(T))).
+	hex(binary_to_list(crypto:hash(md5, A2))),
+    hex(binary_to_list(crypto:hash(md5, T))).
 

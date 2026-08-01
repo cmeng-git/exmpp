@@ -10,7 +10,7 @@ dnl   ZLIB_LIBS
 AC_DEFUN([EXMPP_ZLIB],
 [
   AC_ARG_WITH(zlib,
-    AC_HELP_STRING([--with-zlib=PREFIX],
+    AS_HELP_STRING([--with-zlib=PREFIX],
       [prefix where Zlib is installed (optional)]),
     zlib_prefix="$withval",)
 

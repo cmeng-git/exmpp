@@ -36,7 +36,7 @@
 %% Feature announcement.
 %% --------------------------------------------------------------------
 
-%% @spec (Features_Announcement) -> bool()
+%% -spec (Features_Announcement) -> boolean()
 %%     Features_Announcement = exmpp_xml:xmlel()
 %% @throws {session, announced_support, invalid_feature, Feature}
 %% @doc Tell if the Session Establishment feature is supported.
@@ -56,7 +56,7 @@ announced_support2(Feature) ->
 %% Session establishment.
 %% --------------------------------------------------------------------
 
-%% @spec () -> Session
+%% -spec () -> Session
 %%     Session = exmpp_xml:xmlel()
 %% @doc Make a `<session/>' element to create a session.
 
@@ -68,7 +68,7 @@ establish() ->
     exmpp_iq:set(?NS_JABBER_CLIENT, Session,
 		 exmpp_utils:random_id("session")).
 
-%% @spec (IQ) -> ok
+%% -spec (IQ) -> ok
 %%     IQ = exmpp_xml:xmlel()
 %% @throws {session, check_establishment, establishment_failed, Condition}
 %% @doc Check that the session was created successfully.

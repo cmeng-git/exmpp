@@ -257,17 +257,17 @@
 %% Documentation / type definitions.
 %% --------------------------------------------------------------------
 
-%% @type xmlparseroption() = Engine | Namespace_Option | Names_Format | Checks | Stanza_Max_Size | Root_Depth | Send_End_Element | Autoload_Known
+%% -type xmlparseroption() = Engine | Namespace_Option | Names_Format | Checks | Stanza_Max_Size | Root_Depth | Send_End_Element | Autoload_Known
 %%     Engine = {engine, atom()}
 %%     Stanza_Max_Size  = {max_size, infinity} | {max_size, Size}
 %%     Root_Depth = {root_depth, none} | {root_depth, Depth}
-%%     Name_Format = {names_as_atom, bool()}
+%%     Name_Format = {names_as_atom, boolean()}
 %%     Checks = NS_Check | Elems_Check | Attrs_Check
-%%       NS_Check = {check_nss, Known_List_Name | bool()}
-%%       Elems_Check = {check_elems, Known_List_Name | bool()}
+%%       NS_Check = {check_nss, Known_List_Name | boolean()}
+%%       Elems_Check = {check_elems, Known_List_Name | boolean()}
 %%     Known_List_Name = atom()
-%%     Send_End_Element = {emit_endtag, bool()}.
-%% Options of the form `{Key, bool()}' can be specified as `Key'. See
+%%     Send_End_Element = {emit_endtag, boolean()}.
+%% Options of the form `{Key, boolean()}' can be specified as `Key'. See
 %% {@link proplists}.
 %%
 %% <br/><br/>
@@ -319,13 +319,13 @@
       {engine, atom()}                         |
       {max_size, infinity | non_neg_integer()} |
       {root_depth, none | non_neg_integer()}   |
-      {names_as_atom, bool()}                  | names_as_atom |
-      {check_nss, atom() | bool()}             | check_nss     |
-      {check_elems, atom() | bool()}           | check_elems   |
-      {emit_endtag, bool()}                    | emit_endtag
+      {names_as_atom, boolean()}                  | names_as_atom |
+      {check_nss, atom() | boolean()}             | check_nss     |
+      {check_elems, atom() | boolean()}           | check_elems   |
+      {emit_endtag, boolean()}                    | emit_endtag
      ).
 
-%% @type xmlparser().
+%% -type xmlparser().
 %% Handler for the Expat parser, initialized with a call to {@link
 %% start_parser/0}.
 
@@ -335,7 +335,7 @@
 	 }).
 -type(xmlparser() :: #xml_parser{}).
 
-%% @type xmlel() = {xmlel, NS, Declared_NS, Name, Attrs, Children}
+%% -type xmlel() = {xmlel, NS, Declared_NS, Name, Attrs, Children}
 %%     NS = atom() | string() | undefined
 %%     Declared_NS = [{NS, Prefix} | {NS, none}]
 %%     Name = atom() | string()
@@ -347,34 +347,34 @@
 %% Declared_NS lists all the namespaces declared in this element, even
 %% if they're not used by it.
 
-%% @type xmlattr() = {xmlattr, NS, Name, Value}
+%% -type xmlattr() = {xmlattr, NS, Name, Value}
 %%     NS = atom() | string()
 %%     Name = binary()
 %%     Value = binary().
 %% Represents an tag attribute.
 
-%% @type xmlcdata() = {xmlcdata, CData}
+%% -type xmlcdata() = {xmlcdata, CData}
 %%     CData = binary().
 %% Record representing characters data inside an XML element.
 
-%% @type xmlendtag() = {xmlendtag, NS, Name}
+%% -type xmlendtag() = {xmlendtag, NS, Name}
 %%     NS = atom() | string()
 %%     Name = atom() | string().
 %% Record representing an XML end tag, for nodes above the configured
 %% `root_depth' (see {@link xmlparseroption()}).
 
-%% @type xmlel_old() = {xmlelement, Name, Attrs, Children}
+%% -type xmlel_old() = {xmlelement, Name, Attrs, Children}
 %%     Name = string()
 %%     Attrs = [xmlattr_old()]
 %%     Children = [xmlel_old() | xmlcdata()] | undefined.
 %% Record representing an XML tag.
 
-%% @type xmlattr_old() = {Name, Value}
+%% -type xmlattr_old() = {Name, Value}
 %%     Name = atom() | string()
 %%     Value = string().
 %% Represents an tag attribute.
 
-%% @type pathcomponent() = {element, Elem_Name} | {element, NS, Elem_Name} | {attribute, Attr_Name} | {attribute, NS, Attr_Name} | cdata | cdata_as_list
+%% -type pathcomponent() = {element, Elem_Name} | {element, NS, Elem_Name} | {attribute, Attr_Name} | {attribute, NS, Attr_Name} | cdata | cdata_as_list
 %%     NS = atom() | string()
 %%     Elem_Name = atom() | string()
 %%     Attr_Name = binary().
@@ -462,23 +462,23 @@ load_builtin_known_lists() ->
 %% Registry handling.
 %% --------------------------------------------------------------------
 
-%% @spec (Name, Driver) -> ok
+%% -spec (Name, Driver) -> ok
 %%     Name = atom()
 %%     Driver = atom()
 %% @doc Add a new XML engine.
 
--spec(register_engine/2 :: (atom(), atom()) -> ok).
+-spec register_engine(atom(), atom()) -> ok.
 
 register_engine(Name, Driver) ->
     register_engine(Name, undefined, Driver).
 
-%% @spec (Name, Driver_Path, Driver) -> ok
+%% -spec (Name, Driver_Path, Driver) -> ok
 %%     Name = atom()
 %%     Driver_Path = string() | undefined
 %%     Driver = atom()
 %% @doc Add a new XML engine.
 
--spec(register_engine/3 :: (atom(), string() | undefined, atom()) -> ok).
+-spec register_engine(atom(), string() | undefined, atom()) -> ok.
 
 register_engine(Name, Driver_Path, Driver)
   when is_atom(Name) ->
@@ -492,11 +492,11 @@ register_engine(Name, Driver_Path, Driver)
         {error, Exception} -> throw(Exception)
     end.
 
-%% @spec () -> [Engine_Name]
+%% -spec () -> [Engine_Name]
 %%     Engine_Name = atom()
 %% @doc Return the list of XML engines.
 
--spec(get_engine_names/0 :: () -> [atom()]).
+-spec get_engine_names() -> [atom()].
 
 get_engine_names() ->
     ets:safe_fixtable(?ENGINES_REGISTRY, true),
@@ -510,21 +510,21 @@ get_engine_names2(Prev_Key, Keys) ->
     get_engine_names2(ets:next(?ENGINES_REGISTRY, Prev_Key),
 		      [Prev_Key | Keys]).
 
-%% @spec (Engine_Name) -> bool()
+%% -spec (Engine_Name) -> boolean()
 %%     Engine_Name = atom()
 %% @doc Tell if `Engine_Name' is available.
 
--spec(is_engine_available/1 :: (atom()) -> bool()).
+-spec is_engine_available(atom()) -> boolean().
 
 is_engine_available(Engine_Name) ->
     ets:member(?ENGINES_REGISTRY, Engine_Name).
 
-%% @spec (Engine_Name) -> Driver_Name
+%% -spec (Engine_Name) -> Driver_Name
 %%     Engine_Name = atom()
 %%     Driver_Name = atom() | undefined
 %% @doc Return the port driver name associated to the given engine.
 
--spec(get_engine_driver/1 :: (atom()) -> atom() | undefined).
+-spec get_engine_driver(atom()) -> atom() | undefined.
 
 get_engine_driver(Engine_Name) ->
     case ets:match(?ENGINES_REGISTRY,
@@ -539,7 +539,7 @@ get_engine_driver(Engine_Name) ->
 %% Global known lists.
 %% --------------------------------------------------------------------
 
-%% @spec (List_Name, List) -> ok
+%% -spec (List_Name, List) -> ok
 %%     List_Name = atom()
 %%     List = [NS]
 %%     NS = atom()
@@ -548,7 +548,7 @@ get_engine_driver(Engine_Name) ->
 %% If `check_nss' is enabled, all occurences of these namespaces will be
 %% represented as an atom().
 
--spec(add_known_nss/2 :: (atom(), [atom()]) -> ok).
+-spec add_known_nss(atom(), [atom()]) -> ok.
 
 add_known_nss(List_Name, List) ->
     case gen_server:call(?SERVER, {add_known, nss, List_Name, List}) of
@@ -556,7 +556,7 @@ add_known_nss(List_Name, List) ->
         {error, Exception} -> throw(Exception)
     end.
 
-%% @spec (List_Name, List) -> ok
+%% -spec (List_Name, List) -> ok
 %%     List_Name = atom()
 %%     List = [Name]
 %%     Name = atom()
@@ -565,7 +565,7 @@ add_known_nss(List_Name, List) ->
 %% If `check_elems' is enabled, all occurences of these names will be
 %% represented as an atom().
 
--spec(add_known_elems/2 :: (atom(), [atom()]) -> ok).
+-spec add_known_elems(atom(), [atom()]) -> ok.
 
 add_known_elems(List_Name, List) ->
     case gen_server:call(?SERVER, {add_known, names, List_Name, List}) of
@@ -578,7 +578,7 @@ add_known_elems(List_Name, List) ->
 %% Parsing functions (interface to the Expat port driver).
 %% --------------------------------------------------------------------
 
-%% @spec () -> Parser
+%% -spec () -> Parser
 %%     Parser = xmlparser()
 %% @doc Initialize the Expat port driver with default options.
 %%
@@ -595,12 +595,12 @@ add_known_elems(List_Name, List) ->
 %% @see start_parser/1.
 %% @see xmlparseroption().
 
--spec(start_parser/0 :: () -> xmlparser()).
+-spec start_parser() -> xmlparser().
 
 start_parser() ->
     start_parser([]).
 
-%% @spec (Options) -> Parser
+%% -spec (Options) -> Parser
 %%     Options = [xmlparseroption()]
 %%     Parser = xmlparser()
 %% @throws {xml_parser, options, Reason, Infos}
@@ -618,7 +618,7 @@ start_parser() ->
 %%     xml:stop_parser(Parser).
 %% '''
 
--spec(start_parser/1 :: ([xmlparseroption()]) -> xmlparser()).
+-spec start_parser([xmlparseroption()]) -> xmlparser().
 
 start_parser(Options) ->
     %% Start a port driver instance.
@@ -637,21 +637,21 @@ start_parser(Options) ->
             throw(Exception)
     end.
 
-%% @spec (Parser) -> New_Parser
+%% -spec (Parser) -> New_Parser
 %%     Parser = xmlparser()
 %% @doc Reset the parser with the same previous options.
 
--spec(reset_parser/1 :: (xmlparser()) -> xmlparser()).
+-spec reset_parser(xmlparser()) -> xmlparser().
 
 reset_parser(Parser) ->
     reset_parser(Parser, []).
 
-%% @spec (Parser, Options) -> New_Parser
+%% -spec (Parser, Options) -> New_Parser
 %%     Parser = xmlparser()
 %%     Options = [xmlparseroption()]
 %% @doc Reset the parser and update its options.
 
--spec(reset_parser/2 :: (xmlparser(), [xmlparseroption()]) -> xmlparser()).
+-spec reset_parser(xmlparser(), [xmlparseroption()]) -> xmlparser().
 
 reset_parser(#xml_parser{port = Port} = Parser, Options) ->
     New_Options = merge_options(Parser#xml_parser.options, Options),
@@ -666,7 +666,7 @@ reset_parser2(Parser, Options) ->
             New_Parser
     end.
 
-%% @spec (Parser) -> ok
+%% -spec (Parser) -> ok
 %%     Parser = xmlparser()
 %% @doc Stop the Expat port driver.
 %%
@@ -675,14 +675,14 @@ reset_parser2(Parser, Options) ->
 %%
 %% @see start_parser/0. `start_parser/0' for an example
 
--spec(stop_parser/1 :: (xmlparser()) -> ok).
+-spec stop_parser(xmlparser()) -> ok.
 
 stop_parser(#xml_parser{port = Port} = _Parser) ->
     unlink(Port),
     exmpp_internals:close_port(Port),
     ok.
 
-%% @spec (Parser, Data) -> [XML_Element] | continue
+%% -spec (Parser, Data) -> [XML_Element] | continue
 %%     Parser = xmlparser()
 %%     Data = string() | binary()
 %%     XML_Element = xmlel_old() | xmlel() | xmlendtag() | xmlcdata()
@@ -703,8 +703,8 @@ stop_parser(#xml_parser{port = Port} = _Parser) ->
 %%     xml:parser_final(Parser, "").
 %% '''
 
--spec(parse/2 ::
-      (xmlparser(), binary() | string()) -> [xmlnode() | xmlendtag()] | continue).
+-spec parse
+      (xmlparser(), binary() | string()) -> [xmlnode() | xmlendtag()] | continue.
 
 parse(Parser, Data) when is_list(Data) ->
     parse(Parser, list_to_binary(Data));
@@ -712,7 +712,7 @@ parse(Parser, Data) when is_list(Data) ->
 parse(#xml_parser{port = Port} = _Parser, Data) when is_binary(Data) ->
     engine_parse(Port, Data).
 
-%% @spec (Parser, Data) -> [XML_Element] | done
+%% -spec (Parser, Data) -> [XML_Element] | done
 %%     Parser = xmlparser()
 %%     Data = string() | binary()
 %%     XML_Element = xmlel_old() | xmlel() | xmlendtag() | xmlcdata()
@@ -726,8 +726,7 @@ parse(#xml_parser{port = Port} = _Parser, Data) when is_binary(Data) ->
 %%
 %% @see parse/2. `parse/2' for an example
 
--spec(parse_final/2 ::
-      (xmlparser(), binary() | string()) -> [xmlnode() | xmlendtag()] | done).
+-spec parse_final(xmlparser(), binary() | string()) -> [xmlnode() | xmlendtag()] | done.
 
 parse_final(Parser, Data) when is_list(Data) ->
     parse_final(Parser, list_to_binary(Data));
@@ -735,7 +734,7 @@ parse_final(Parser, Data) when is_list(Data) ->
 parse_final(#xml_parser{port = Port} = _Parser, Data) when is_binary(Data) ->
     engine_parse_final(Port, Data).
 
-%% @spec (Document) -> [XML_Element] | done
+%% -spec (Document) -> [XML_Element] | done
 %%     Document = string() | binary()
 %%     XML_Element = xmlel() | xmlel_old() | xmlendtag() | xmlcdata()
 %% @doc Parse an entire XML document at once.
@@ -744,13 +743,12 @@ parse_final(#xml_parser{port = Port} = _Parser, Data) when is_binary(Data) ->
 %% this function will take care of it. It'll use default options; see
 %% {@link start_parser/1} for any related informations.
 
--spec(parse_document/1 ::
-      (binary() | string()) -> [xmlnode() | xmlendtag()] | done).
+-spec parse_document(binary() | string()) -> [xmlnode() | xmlendtag()] | done.
 
 parse_document(Document) ->
     parse_document(Document, []).
 
-%% @spec (Document, Parser_Options) -> [XML_Element] | done
+%% -spec (Document, Parser_Options) -> [XML_Element] | done
 %%     Document = string() | binary()
 %%     Parser_Options = [xmlparseroption()]
 %%     XML_Element = xmlel() | xmlel_old() | xmlendtag() | xmlcdata()
@@ -762,9 +760,9 @@ parse_document(Document) ->
 %%
 %% Return values are the same as {@link parse_final/2}.
 
--spec(parse_document/2 ::
+-spec parse_document
       (binary() | string(), [xmlparseroption()]) ->
-	     [xmlnode() | xmlendtag()] | done).
+	     [xmlnode() | xmlendtag()] | done.
 
 parse_document(Document, Parser_Options) ->
     Parser = start_parser(Parser_Options),
@@ -777,7 +775,7 @@ parse_document(Document, Parser_Options) ->
         stop_parser(Parser)
     end.
 
-%% @spec (Fragment) -> [XML_Element] | continue
+%% -spec (Fragment) -> [XML_Element] | continue
 %%     Fragment = string() | binary()
 %%     XML_Element = xmlel() | xmlel_old() | xmlendtag() | xmlcdata()
 %% @doc Parse a fragment of an XML document at once.
@@ -793,13 +791,12 @@ parse_document(Document, Parser_Options) ->
 %% will set `{root_depth, none}' (which can be overriden); see {@link
 %% start_parser/1} for any related informations.
 
--spec(parse_document_fragment/1 ::
-      (binary() | string()) -> [xmlnode() | xmlendtag()] | continue).
+-spec parse_document_fragment(binary() | string()) -> [xmlnode() | xmlendtag()] | continue.
 
 parse_document_fragment(Fragment) ->
     parse_document_fragment(Fragment, []).
 
-%% @spec (Fragment, Parser_Options) -> [XML_Element] | continue
+%% -spec (Fragment, Parser_Options) -> [XML_Element] | continue
 %%     Fragment = string() | binary()
 %%     Parser_Options = [xmlparseroption()]
 %%     XML_Element = xmlel() | xmlel_old() | xmlendtag() | xmlcdata()
@@ -818,9 +815,9 @@ parse_document_fragment(Fragment) ->
 %%
 %% Return values are the same as {@link parse_final/2}.
 
--spec(parse_document_fragment/2 ::
+-spec parse_document_fragment
       (binary() | string(), [xmlparseroption()]) ->
-	     [xmlnode() | xmlendtag()] | continue).
+	     [xmlnode() | xmlendtag()] | continue.
 
 parse_document_fragment(Fragment, Parser_Options) ->
     Parser = start_parser([{root_depth, none} | Parser_Options]),
@@ -842,7 +839,7 @@ port_revision(#xml_parser{port = Port} = _Parser) ->
 %% Functions to handle namespaces in XML elements and attributes.
 %% --------------------------------------------------------------------
 
-%% @spec (XML_Element, NS) -> bool()
+%% -spec (XML_Element, NS) -> boolean()
 %%     XML_Element = xmlel()
 %%     NS = atom() | string()
 %% @doc Tell if `NS' was declared within this element.
@@ -850,12 +847,12 @@ port_revision(#xml_parser{port = Port} = _Parser) ->
 %% @todo Like for elements and attributes, implement a more flexible
 %% matching (`string()' vs. `atom()').
 
--spec(is_ns_declared_here/2 :: (xmlel(), xmlname()) -> bool()).
+-spec is_ns_declared_here(xmlel(), xmlname()) -> boolean().
 
 is_ns_declared_here(#xmlel{declared_ns = Declared_NS}, NS) ->
     lists:keymember(NS, 1, Declared_NS).
 
-%% @spec (XML_Element, NS, Prefix) -> New_XML_Element
+%% -spec (XML_Element, NS, Prefix) -> New_XML_Element
 %%     XML_Element = xmlel()
 %%     NS = atom() | string()
 %%     Prefix = string() | none
@@ -865,7 +862,7 @@ is_ns_declared_here(#xmlel{declared_ns = Declared_NS}, NS) ->
 %% @todo Like for elements and attributes, implement a more flexible
 %% matching (`string()' vs. `atom()').
 
--spec(declare_ns_here/3 :: (xmlel(), xmlname(), string() | none) -> xmlel()).
+-spec declare_ns_here(xmlel(), xmlname(), string() | none) -> xmlel().
 
 declare_ns_here(#xmlel{declared_ns = Declared_NS} = XML_Element,
 		NS, Prefix) ->
@@ -873,13 +870,13 @@ declare_ns_here(#xmlel{declared_ns = Declared_NS} = XML_Element,
 				     Declared_NS, {NS, Prefix}),
     XML_Element#xmlel{declared_ns = New_Declared_NS}.
 
-%% @spec (XML_Element) -> NS | undefined
+%% -spec (XML_Element) -> NS | undefined
 %%     XML_Element = xmlel()
 %%     NS = string()
 %% @doc Return the namespace as a string, regardless of the original
 %% encoding.
 
--spec(get_ns_as_list/1 :: (xmlel()) -> string() | undefined).
+-spec get_ns_as_list(xmlel()) -> string() | undefined.
 
 get_ns_as_list(#xmlel{ns = undefined}) ->
     undefined;
@@ -889,13 +886,13 @@ get_ns_as_list(#xmlel{ns = NS}) ->
 as_list(V) when is_atom(V) -> atom_to_list(V);
 as_list(V) when is_list(V) -> V.
 
-%% @spec (XML_Element) -> NS | undefined
+%% -spec (XML_Element) -> NS | undefined
 %%     XML_Element = xmlel()
 %%     NS = atom()
 %% @doc Return the namespace as an atom, regardless of the original
 %% encoding.
 
--spec(get_ns_as_atom/1 :: (xmlel()) -> atom() | undefined).
+-spec get_ns_as_atom(xmlel()) -> atom() | undefined.
 
 get_ns_as_atom(#xmlel{ns = undefined}) ->
     undefined;
@@ -910,7 +907,7 @@ as_atom(V) when is_list(V) -> list_to_atom(V).
 %% This is similar to the DOM interface but NOT compliant.
 %% --------------------------------------------------------------------
 
-%% @spec (Name, Value) -> Attr
+%% -spec (Name, Value) -> Attr
 %%     Name = binary()
 %%     Value = binary() | string() | atom() | integer()
 %%     Attr = xmlattr()
@@ -921,9 +918,9 @@ as_atom(V) when is_list(V) -> list_to_atom(V).
 %% Attr = #xmlattr{name = Name, value = Value}.
 %% '''
 
--spec(attribute/2 ::
+-spec attribute
       (attributename(), binary() | string() | atom() | integer()) ->
-	     xmlattr()).
+	     xmlattr().
 
 attribute(Name, Value) when is_binary(Name) ->
     set_attr_value(#xmlattr{name = Name}, Value).
@@ -933,7 +930,7 @@ set_attr_value(#xmlattr{} = Attr, Value) ->
 set_attr_value({Name, _}, Value) ->
     {Name, exmpp_utils:any_to_list(Value)}.
 
-%% @spec (NS, Name, Value) -> Attr
+%% -spec (NS, Name, Value) -> Attr
 %%     NS = atom() | string() | undefined
 %%     Name = binary()
 %%     Value = binary() | string() | atom() | integer()
@@ -945,21 +942,21 @@ set_attr_value({Name, _}, Value) ->
 %% Attr = #xmlattr{ns = NS, name = Name, value = Value}.
 %% '''
 
--spec(attribute/3 ::
+-spec attribute
       (xmlname(), attributename(), binary() | string() | atom() | integer()) ->
-	     xmlattr()).
+	     xmlattr().
 
 attribute(NS, Name, Value) when is_binary(Name) ->
     set_attr_value(#xmlattr{ns = NS, name = Name}, Value).
 
-%% @spec (Attr, Name) -> bool()
+%% -spec (Attr, Name) -> boolean()
 %%     Attr = xmlattr() | xmlattr_old()
 %%     Name = string() | binary()
 %% @doc Tell if `Attr' is named `Name'.
 %%
 %% It takes care of comparison between string and atom.
 
--spec(attribute_matches/2 :: (xmlattr_any(), xmlname() | attributename()) -> bool()).
+-spec attribute_matches(xmlattr_any(), xmlname() | attributename()) -> boolean().
 
 attribute_matches(#xmlattr{name = Name}, Name) ->
     true;
@@ -976,7 +973,7 @@ attribute_matches({Name, _Value}, Name_B)
 attribute_matches(_Attr, _Name) ->
     false.
 
-%% @spec (Attr, NS, Name) -> bool()
+%% -spec (Attr, NS, Name) -> boolean()
 %%     Attr = xmlattr()
 %%     NS = atom() | string()
 %%     Name = string() | binary()
@@ -984,8 +981,8 @@ attribute_matches(_Attr, _Name) ->
 %%
 %% It takes care of comparison between string and atom.
 
--spec(attribute_matches/3 ::
-      (xmlattr(), xmlname(), xmlname() | attributename()) -> bool()).
+-spec attribute_matches
+      (xmlattr(), xmlname(), xmlname() | attributename()) -> boolean().
 
 attribute_matches(Attr, NS, Name) when is_list(Name) ->
     attribute_matches(Attr, NS, list_to_binary(Name));
@@ -1002,7 +999,7 @@ attribute_matches(#xmlattr{ns = NS, name = Name}, NS, Name) ->
 attribute_matches(_Attr, _NS, _Name) ->
     false.
 
-%% @spec (Attrs, Attr_Name) -> Attr | undefined
+%% -spec (Attrs, Attr_Name) -> Attr | undefined
 %%     Attrs = [xmlattr()] | [xmlattr_old()]
 %%     Attr_Name = binary()
 %%     Attr = xmlattr() | xmlattr_old()
@@ -1014,14 +1011,14 @@ attribute_matches(_Attr, _NS, _Name) ->
 %% both clauses take a list() as a first argument. So until it can look
 %% inside those list(), we specify a less strict contract.
 %%
-%% -spec(get_attribute_node_from_list/2 ::
+%% -spec get_attribute_node_from_list
 %%   ([], xmlname())              -> undefined;
 %%   ([xmlattr()], xmlname())     -> xmlattr() | undefined;
 %%   ([xmlattr_old()], xmlname()) -> xmlattr_old() | undefined).
 
--spec(get_attribute_node_from_list/2 ::
+-spec get_attribute_node_from_list
       ([xmlattr() | xmlattr_old()], attributename()) ->
-	     xmlattr() | xmlattr_old() | undefined).
+	     xmlattr() | xmlattr_old() | undefined.
 
 get_attribute_node_from_list([Attr | Rest], Name) ->
     case attribute_matches(Attr, Name) of
@@ -1031,7 +1028,7 @@ get_attribute_node_from_list([Attr | Rest], Name) ->
 get_attribute_node_from_list([], _Name) ->
     undefined.
 
-%% @spec (Attrs, NS, Attr_Name) -> Attr | undefined
+%% -spec (Attrs, NS, Attr_Name) -> Attr | undefined
 %%     Attrs = [xmlattr()]
 %%     NS = atom() | string()
 %%     Attr_Name = binary()
@@ -1041,8 +1038,8 @@ get_attribute_node_from_list([], _Name) ->
 %%
 %% Return `undefined' if the attribute isn't found.
 
--spec(get_attribute_node_from_list/3 ::
-      ([xmlattr()], xmlname(), attributename()) -> xmlattr() | undefined).
+-spec get_attribute_node_from_list
+      ([xmlattr()], xmlname(), attributename()) -> xmlattr() | undefined.
 
 get_attribute_node_from_list([Attr | Rest], NS, Name) ->
     case attribute_matches(Attr, NS, Name) of
@@ -1052,7 +1049,7 @@ get_attribute_node_from_list([Attr | Rest], NS, Name) ->
 get_attribute_node_from_list([], _NS, _Name) ->
     undefined.
 
-%% @spec (XML_Element, Attr_Name) -> Attr | undefined
+%% -spec (XML_Element, Attr_Name) -> Attr | undefined
 %%     XML_Element = xmlel() | xmlel_old() | undefined
 %%     Attr_Name = binary()
 %%     Attr = xmlattr() | xmlattr_old()
@@ -1060,10 +1057,10 @@ get_attribute_node_from_list([], _NS, _Name) ->
 %%
 %% Return `undefined' if the attribute isn't found.
 
--spec(get_attribute_node/2 ::
+-spec get_attribute_node
       (xmlel(), attributename())     -> xmlattr() | undefined;
       (xmlel_old(), attributename()) -> xmlattr_old() | undefined;
-      (undefined, attributename())   -> undefined).
+      (undefined, attributename())   -> undefined.
 
 get_attribute_node(#xmlel{attrs = Attrs} = _XML_Element, Name) ->
     get_attribute_node_from_list(Attrs, Name);
@@ -1072,7 +1069,7 @@ get_attribute_node(#xmlelement{attrs = Attrs} = _XML_Element, Name) ->
 get_attribute_node(undefined, _Name) ->
     undefined.
 
-%% @spec (XML_Element, NS, Attr_Name) -> Attr | undefined
+%% -spec (XML_Element, NS, Attr_Name) -> Attr | undefined
 %%     XML_Element = xmlel() | undefined
 %%     NS = atom() | string()
 %%     Attr_Name = binary()
@@ -1081,16 +1078,16 @@ get_attribute_node(undefined, _Name) ->
 %%
 %% Return `undefined' if the attribute isn't found.
 
--spec(get_attribute_node/3 ::
+-spec get_attribute_node
       (xmlel(), xmlname(), attributename())   -> xmlattr() | undefined;
-      (undefined, xmlname(), attributename()) -> undefined).
+      (undefined, xmlname(), attributename()) -> undefined.
 
 get_attribute_node(#xmlel{attrs = Attrs} = _XML_Element, NS, Name) ->
     get_attribute_node_from_list(Attrs, NS, Name);
 get_attribute_node(undefined, _NS, _Name) ->
     undefined.
 
-%% @spec (Attrs, Attr_Name, Default) -> Attr_Value | Default
+%% -spec (Attrs, Attr_Name, Default) -> Attr_Value | Default
 %%     Attrs = [xmlattr()] | [xmlattr_old()]
 %%     Attr_Name = binary()
 %%     Default = term()
@@ -1109,14 +1106,14 @@ get_attribute_node(undefined, _NS, _Name) ->
 %% both clauses take a list() as a first argument. So until it can look
 %% inside those list(), we specify a less strict contract.
 %%
-%% -spec(get_attribute_from_list/3 ::
+%% -spec get_attribute_from_list
 %%   ([], attributename(), Default)              -> Default;
 %%   ([xmlattr()], attributename(), Default)     -> binary() | Default;
-%%   ([xmlattr_old()], attributename(), Default) -> string() | Default).
+%%   ([xmlattr_old()], attributename(), Default) -> string() | Default.
 
--spec(get_attribute_from_list/3 ::
+-spec get_attribute_from_list
       ([xmlattr() | xmlattr_old()], attributename(), Default) ->
-	     binary() | string() | Default).
+	     binary() | string() | Default.
 
 get_attribute_from_list(Attrs, Attr_Name, Default) ->
     case get_attribute_node_from_list(Attrs, Attr_Name) of
@@ -1128,7 +1125,7 @@ get_attribute_from_list(Attrs, Attr_Name, Default) ->
             Default
     end.
 
-%% @spec (Attrs, NS, Attr_Name, Default) -> Attr_Value | Default
+%% -spec (Attrs, NS, Attr_Name, Default) -> Attr_Value | Default
 %%     Attrs = [xmlattr()]
 %%     NS = atom() | string()
 %%     Attr_Name = binary()
@@ -1139,8 +1136,8 @@ get_attribute_from_list(Attrs, Attr_Name, Default) ->
 %%
 %% Return `Default' if the attribute isn't found.
 
--spec(get_attribute_from_list/4 ::
-      ([xmlattr()], xmlname(), attributename(), Default) -> binary() | Default).
+-spec get_attribute_from_list
+      ([xmlattr()], xmlname(), attributename(), Default) -> binary() | Default.
 
 get_attribute_from_list(Attrs, NS, Attr_Name, Default) ->
     case get_attribute_node_from_list(Attrs, NS, Attr_Name) of
@@ -1150,7 +1147,7 @@ get_attribute_from_list(Attrs, NS, Attr_Name, Default) ->
             Default
     end.
 
-%% @spec (XML_Element, Attr_Name, Default) -> Attr_Value | Default
+%% -spec (XML_Element, Attr_Name, Default) -> Attr_Value | Default
 %%     XML_Element = xmlel() | xmlel_old() | undefined
 %%     Attr_Name = binary()
 %%     Default = term()
@@ -1165,10 +1162,10 @@ get_attribute_from_list(Attrs, NS, Attr_Name, Default) ->
 %%
 %% Return `Default' if the attribute isn't found.
 
--spec(get_attribute/3 ::
+-spec get_attribute
       (xmlel(), attributename(), Default)     -> binary() | Default;
       (xmlel_old(), attributename(), Default) -> string() | Default;
-      (undefined, attributename(), Default)   -> Default).
+      (undefined, attributename(), Default)   -> Default.
 
 get_attribute(#xmlel{attrs = Attrs} = _XML_Element, Name, Default) ->
     get_attribute_from_list(Attrs, Name, Default);
@@ -1177,7 +1174,7 @@ get_attribute(#xmlelement{attrs = Attrs} = _XML_Element, Name, Default) ->
 get_attribute(undefined, _Name, Default) ->
     Default.
 
-%% @spec (XML_Element, NS, Attr_Name, Default) -> Attr_Value | Default
+%% -spec (XML_Element, NS, Attr_Name, Default) -> Attr_Value | Default
 %%     XML_Element = xmlel() | undefined
 %%     NS = atom() | string()
 %%     Attr_Name = binary()
@@ -1188,16 +1185,16 @@ get_attribute(undefined, _Name, Default) ->
 %%
 %% Return `Default' if the attribute isn't found.
 
--spec(get_attribute/4 ::
+-spec get_attribute
       (xmlel(), xmlname(), attributename(), Default)   -> binary() | Default;
-      (undefined, xmlname(), attributename(), Default) -> Default).
+      (undefined, xmlname(), attributename(), Default) -> Default.
 
 get_attribute(#xmlel{attrs = Attrs} = _XML_Element, NS, Name, Default) ->
     get_attribute_from_list(Attrs, NS, Name, Default);
 get_attribute(undefined, _NS, _Name, Default) ->
     Default.
 
-%% @spec (Attrs, Attr_Name, Default) -> Attr_Value | Default
+%% -spec (Attrs, Attr_Name, Default) -> Attr_Value | Default
 %%     Attrs = [xmlattr()] | [xmlattr_old()]
 %%     Attr_Name = binary()
 %%     Default = term()
@@ -1207,8 +1204,8 @@ get_attribute(undefined, _NS, _Name, Default) ->
 %%
 %% Return `Default' if the attribute isn't found.
 
--spec(get_attribute_from_list_as_list/3 ::
-      ([xmlattr()] | [xmlattr_old()], attributename(), Default) -> string() | Default).
+-spec get_attribute_from_list_as_list
+      ([xmlattr()] | [xmlattr_old()], attributename(), Default) -> string() | Default.
 
 get_attribute_from_list_as_list(Attrs, Attr_Name, Default) ->
     case get_attribute_node_from_list(Attrs, Attr_Name) of
@@ -1220,7 +1217,7 @@ get_attribute_from_list_as_list(Attrs, Attr_Name, Default) ->
             Default
     end.
 
-%% @spec (Attrs, NS, Attr_Name, Default) -> Attr_Value | Default
+%% -spec (Attrs, NS, Attr_Name, Default) -> Attr_Value | Default
 %%     Attrs = [xmlattr()]
 %%     NS = atom() | string()
 %%     Attr_Name = binary()
@@ -1231,8 +1228,8 @@ get_attribute_from_list_as_list(Attrs, Attr_Name, Default) ->
 %%
 %% Return `Default' if the attribute isn't found.
 
--spec(get_attribute_from_list_as_list/4 ::
-      ([xmlattr()], xmlname(), attributename(), Default) -> string() | Default).
+-spec get_attribute_from_list_as_list
+      ([xmlattr()], xmlname(), attributename(), Default) -> string() | Default.
 
 get_attribute_from_list_as_list(Attrs, NS, Attr_Name, Default) ->
     case get_attribute_node_from_list(Attrs, NS, Attr_Name) of
@@ -1242,7 +1239,7 @@ get_attribute_from_list_as_list(Attrs, NS, Attr_Name, Default) ->
             Default
     end.
 
-%% @spec (XML_Element, Attr_Name, Default) -> Attr_Value | Default
+%% -spec (XML_Element, Attr_Name, Default) -> Attr_Value | Default
 %%     XML_Element = xmlel() | xmlel_old() | undefined
 %%     Attr_Name = binary()
 %%     Default = term()
@@ -1252,9 +1249,9 @@ get_attribute_from_list_as_list(Attrs, NS, Attr_Name, Default) ->
 %%
 %% Return `Default' if the attribute isn't found.
 
--spec(get_attribute_as_list/3 ::
+-spec get_attribute_as_list
       (xmlel_any(), attributename(), Default) -> string() | Default;
-      (undefined, attributename(), Default)   -> Default).
+      (undefined, attributename(), Default)   -> Default.
 
 get_attribute_as_list(#xmlel{attrs = Attrs} = _XML_Element, Name,
 		      Default) ->
@@ -1265,7 +1262,7 @@ get_attribute_as_list(#xmlelement{attrs = Attrs} = _XML_Element, Name,
 get_attribute_as_list(undefined, _Name, Default) ->
     Default.
 
-%% @spec (XML_Element, NS, Attr_Name, Default) -> Attr_Value | Default
+%% -spec (XML_Element, NS, Attr_Name, Default) -> Attr_Value | Default
 %%     XML_Element = xmlel() | undefined
 %%     NS = atom() | string()
 %%     Attr_Name = binary()
@@ -1276,8 +1273,8 @@ get_attribute_as_list(undefined, _Name, Default) ->
 %%
 %% Return `Default' if the attribute isn't found.
 
--spec(get_attribute_as_list/4 ::
-      (xmlel() | undefined, xmlname(), attributename(), Default) -> string() | Default).
+-spec get_attribute_as_list
+      (xmlel() | undefined, xmlname(), attributename(), Default) -> string() | Default.
 
 get_attribute_as_list(#xmlel{attrs = Attrs} = _XML_Element, NS, Name,
 		      Default) ->
@@ -1285,7 +1282,7 @@ get_attribute_as_list(#xmlel{attrs = Attrs} = _XML_Element, NS, Name,
 get_attribute_as_list(undefined, _NS, _Name, Default) ->
     Default.
 
-%% @spec (Attrs, Attr_Name, Default) -> Attr_Value | Default
+%% -spec (Attrs, Attr_Name, Default) -> Attr_Value | Default
 %%     Attrs = [xmlattr()] | [xmlattr_old()]
 %%     Attr_Name = binary()
 %%     Default = term()
@@ -1295,8 +1292,8 @@ get_attribute_as_list(undefined, _NS, _Name, Default) ->
 %%
 %% Return `Default' if the attribute isn't found.
 
--spec(get_attribute_from_list_as_binary/3 ::
-      ([xmlattr()] | [xmlattr_old()], attributename(), Default) -> binary() | Default).
+-spec get_attribute_from_list_as_binary
+      ([xmlattr()] | [xmlattr_old()], attributename(), Default) -> binary() | Default.
 
 get_attribute_from_list_as_binary(Attrs, Attr_Name, Default) ->
     case get_attribute_node_from_list(Attrs, Attr_Name) of
@@ -1308,7 +1305,7 @@ get_attribute_from_list_as_binary(Attrs, Attr_Name, Default) ->
             Default
     end.
 
-%% @spec (Attrs, NS, Attr_Name, Default) -> Attr_Value | Default
+%% -spec (Attrs, NS, Attr_Name, Default) -> Attr_Value | Default
 %%     Attrs = [xmlattr()]
 %%     NS = atom() | string()
 %%     Attr_Name = binary()
@@ -1319,8 +1316,8 @@ get_attribute_from_list_as_binary(Attrs, Attr_Name, Default) ->
 %%
 %% Return `Default' if the attribute isn't found.
 
--spec(get_attribute_from_list_as_binary/4 ::
-      ([xmlattr()], xmlname(), attributename(), Default) -> binary() | Default).
+-spec get_attribute_from_list_as_binary
+      ([xmlattr()], xmlname(), attributename(), Default) -> binary() | Default.
 
 get_attribute_from_list_as_binary(Attrs, NS, Attr_Name, Default) ->
     case get_attribute_node_from_list(Attrs, NS, Attr_Name) of
@@ -1330,7 +1327,7 @@ get_attribute_from_list_as_binary(Attrs, NS, Attr_Name, Default) ->
             Default
     end.
 
-%% @spec (XML_Element, Attr_Name, Default) -> Attr_Value | Default
+%% -spec (XML_Element, Attr_Name, Default) -> Attr_Value | Default
 %%     XML_Element = xmlel() | xmlel_old() | undefined
 %%     Attr_Name = binary()
 %%     Default = term()
@@ -1340,9 +1337,9 @@ get_attribute_from_list_as_binary(Attrs, NS, Attr_Name, Default) ->
 %%
 %% Return `Default' if the attribute isn't found.
 
--spec(get_attribute_as_binary/3 ::
+-spec get_attribute_as_binary
       (xmlel_any(), attributename(), Default) -> binary() | Default;
-      (undefined, attributename(), Default)   -> Default).
+      (undefined, attributename(), Default)   -> Default.
 
 get_attribute_as_binary(#xmlel{attrs = Attrs} = _XML_Element, Name,
 			Default) ->
@@ -1353,7 +1350,7 @@ get_attribute_as_binary(#xmlelement{attrs = Attrs} = _XML_Element, Name,
 get_attribute_as_binary(undefined, _Name, Default) ->
     Default.
 
-%% @spec (XML_Element, NS, Attr_Name, Default) -> Attr_Value | Default
+%% -spec (XML_Element, NS, Attr_Name, Default) -> Attr_Value | Default
 %%     XML_Element = xmlel() | undefined
 %%     NS = atom() | string()
 %%     Attr_Name = binary()
@@ -1364,9 +1361,9 @@ get_attribute_as_binary(undefined, _Name, Default) ->
 %%
 %% Return `Default' if the attribute isn't found.
 
--spec(get_attribute_as_binary/4 ::
+-spec get_attribute_as_binary
       (xmlel(), xmlname(), attributename(), Default)   -> binary() | Default;
-      (undefined, xmlname(), attributename(), Default) -> Default).
+      (undefined, xmlname(), attributename(), Default) -> Default.
 
 get_attribute_as_binary(#xmlel{attrs = Attrs} = _XML_Element, NS, Name,
 			Default) ->
@@ -1374,13 +1371,13 @@ get_attribute_as_binary(#xmlel{attrs = Attrs} = _XML_Element, NS, Name,
 get_attribute_as_binary(undefined, _NS, _Name, Default) ->
     Default.
 
-%% @spec (Attrs, Attr_Name) -> bool()
+%% -spec (Attrs, Attr_Name) -> boolean()
 %%     Attrs = [xmlattr()] | [xmlattr_old()]
 %%     Attr_Name = binary()
 %% @doc Check the presence for attribute `Attr_Name' in the list.
 
--spec(has_attribute_in_list/2 ::
-      ([xmlattr()] | [xmlattr_old()], attributename()) -> bool()).
+-spec has_attribute_in_list
+      ([xmlattr()] | [xmlattr_old()], attributename()) -> boolean().
 
 has_attribute_in_list(Attrs, Name) ->
     case get_attribute_node_from_list(Attrs, Name) of
@@ -1388,15 +1385,15 @@ has_attribute_in_list(Attrs, Name) ->
         _         -> true
     end.
 
-%% @spec (Attrs, NS, Attr_Name) -> bool()
+%% -spec (Attrs, NS, Attr_Name) -> boolean()
 %%     Attrs = [xmlattr()]
 %%     NS = atom() | string()
 %%     Attr_Name = binary()
 %% @doc Check the presence for attribute `Attr_Name' with namespace `NS'
 %% in the list.
 
--spec(has_attribute_in_list/3 ::
-      ([xmlattr()], xmlname(), attributename()) -> bool()).
+-spec has_attribute_in_list
+      ([xmlattr()], xmlname(), attributename()) -> boolean().
 
 has_attribute_in_list(Attrs, NS, Name) ->
     case get_attribute_node_from_list(Attrs, NS, Name) of
@@ -1404,13 +1401,13 @@ has_attribute_in_list(Attrs, NS, Name) ->
         _         -> true
     end.
 
-%% @spec (XML_Element, Attr_Name) -> bool()
+%% -spec (XML_Element, Attr_Name) -> boolean()
 %%     XML_Element = xmlel() | xmlel_old() | undefined
 %%     Attr_Name = binary()
 %% @doc Check the presence for attribute `Attr_Name' in the XML element.
 
--spec(has_attribute/2 ::
-      (xmlel_any() | undefined, attributename()) -> bool()).
+-spec has_attribute
+      (xmlel_any() | undefined, attributename()) -> boolean().
 
 has_attribute(#xmlel{attrs = Attrs} = _XML_Element, Name) ->
     has_attribute_in_list(Attrs, Name);
@@ -1419,22 +1416,22 @@ has_attribute(#xmlelement{attrs = Attrs} = _XML_Element, Name) ->
 has_attribute(undefined, _Name) ->
     false.
 
-%% @spec (XML_Element, NS, Attr_Name) -> bool()
+%% -spec (XML_Element, NS, Attr_Name) -> boolean()
 %%     XML_Element = xmlel() | xmlel_old() | undefined
 %%     NS = atom() | string()
 %%     Attr_Name = binary()
 %% @doc Check the presence for attribute `Attr_Name' with namespace `NS'
 %% in the XML element.
 
--spec(has_attribute/3 ::
-      (xmlel_any() | undefined, xmlname(), attributename()) -> bool()).
+-spec has_attribute
+      (xmlel_any() | undefined, xmlname(), attributename()) -> boolean().
 
 has_attribute(#xmlel{attrs = Attrs} = _XML_Element, NS, Name) ->
     has_attribute_in_list(Attrs, NS, Name);
 has_attribute(undefined, _NS, _Name) ->
     false.
 
-%% @spec (Attrs, Attr) -> New_Attrs
+%% -spec (Attrs, Attr) -> New_Attrs
 %%     Attrs = [xmlattr()] | [xmlattr_old()]
 %%     Attr = xmlattr() | xmlattr_old()
 %%     Attr_Name = binary()
@@ -1450,15 +1447,15 @@ has_attribute(undefined, _NS, _Name) ->
 %% both clauses take a list() as a first argument. So until it can look
 %% inside those list(), we specify a less strict contract.
 %%
-%% -spec(set_attribute_in_list/2 ::
+%% -spec set_attribute_in_list
 %%   ([], xmlattr()                   -> [xmlattr()];
 %%   ([], xmlattr_old())              -> [xmlattr_old()];
 %%   ([xmlattr()], xmlattr()          -> [xmlattr()];
-%%   ([xmlattr_old()], xmlattr_old()) -> [xmlattr_old()]).
+%%   ([xmlattr_old()], xmlattr_old()) -> [xmlattr_old()].
 
--spec(set_attribute_in_list/2 ::
+-spec set_attribute_in_list
       ([xmlattr() | xmlattr_old()], xmlattr() | xmlattr_old()) ->
-	     [xmlattr() | xmlattr_old()]).
+	     [xmlattr() | xmlattr_old()].
 
 set_attribute_in_list(Attrs, {Name, Value}) when is_binary(Name) ->
     set_attribute_in_list(Attrs, Name, Value);
@@ -1484,7 +1481,7 @@ set_attribute_in_list2([Attr | Rest],
 set_attribute_in_list2([], New_Attr, New_Attrs) ->
     New_Attrs ++ [New_Attr].
 
-%% @spec (Attrs, Attr_Name, Attr_Value) -> New_Attrs
+%% -spec (Attrs, Attr_Name, Attr_Value) -> New_Attrs
 %%     Attrs = [xmlattr()] | [xmlattr_old()]
 %%     Attr_Name = binary()
 %%     Attr_Value = binary() | string() | atom() | integer()
@@ -1500,16 +1497,16 @@ set_attribute_in_list2([], New_Attr, New_Attrs) ->
 %% both clauses take a list() as a first argument. So until it can look
 %% inside those list(), we specify a less strict contract.
 %%
-%% -spec(set_attribute_in_list/3 ::
+%% -spec set_attribute_in_list
 %%   ([xmlattr()], attributename(), binary() | string() | atom() | integer()) ->
 %%       [xmlattr()];
 %%   ([xmlattr_old()], attributename(), binary() | string() | atom() | integer()) ->
-%%       [xmlattr_old()]).
+%%       [xmlattr_old()].
 
--spec(set_attribute_in_list/3 ::
+-spec set_attribute_in_list
       ([xmlattr() | xmlattr_old()],
        attributename(), binary() | string() | atom() | integer()) ->
-	     [xmlattr() | xmlattr_old()]).
+	     [xmlattr() | xmlattr_old()].
 
 set_attribute_in_list(Attrs, Name, Value) when is_binary(Name) ->
     set_attribute_in_list2(Attrs, Name, Value, []).
@@ -1534,7 +1531,7 @@ set_attribute_in_list2([], Name, Value, New_Attrs) ->
 	       end,
     New_Attrs ++ [New_Attr].
 
-%% @spec (Attrs, NS, Attr_Name, Attr_Value) -> New_Attrs
+%% -spec (Attrs, NS, Attr_Name, Attr_Value) -> New_Attrs
 %%     Attrs = [xmlattr()]
 %%     NS = atom() | string()
 %%     Attr_Name = binary()
@@ -1546,10 +1543,10 @@ set_attribute_in_list2([], Name, Value, New_Attrs) ->
 %% If the attribute is to be added, this function use the {@link
 %% xmlattr()} record.
 
--spec(set_attribute_in_list/4 ::
+-spec set_attribute_in_list
       ([xmlattr()], xmlname(), attributename(),
        binary() | string() | atom() | integer()) ->
-	     [xmlattr()]).
+	     [xmlattr()].
 
 set_attribute_in_list(Attrs, NS, Name, Value) when is_binary(Name) ->
     set_attribute_in_list2(Attrs, NS, Name, Value, []).
@@ -1565,7 +1562,7 @@ set_attribute_in_list2([Attr | Rest], NS, Name, Value, New_Attrs) ->
 set_attribute_in_list2([], NS, Name, Value, New_Attrs) ->
     New_Attrs ++ [attribute(NS, Name, Value)].
 
-%% @spec (XML_Element, Attr) -> New_XML_Element
+%% -spec (XML_Element, Attr) -> New_XML_Element
 %%     XML_Element = xmlel() | xmlel_old()
 %%     Attr = xmlattr() | xmlattr_old()
 %%     New_XML_Element = xmlel() | xmlel_old()
@@ -1575,9 +1572,9 @@ set_attribute_in_list2([], NS, Name, Value, New_Attrs) ->
 %% If a match is found, `Attr' will replace the old attribute as is,
 %% regardless of the format of the latter.
 
--spec(set_attribute/2 ::
+-spec set_attribute
       (xmlel(), xmlattr() | xmlattr_old())     -> xmlel();
-      (xmlel_old(), xmlattr() | xmlattr_old()) -> xmlel_old()).
+      (xmlel_old(), xmlattr() | xmlattr_old()) -> xmlel_old().
 
 set_attribute(#xmlel{attrs = Attrs} = XML_Element, Attr) ->
     New_Attrs = set_attribute_in_list(Attrs, Attr),
@@ -1586,18 +1583,18 @@ set_attribute(#xmlelement{attrs = Attrs} = XML_Element, Attr) ->
     New_Attrs = set_attribute_in_list(Attrs, Attr),
     XML_Element#xmlelement{attrs = New_Attrs}.
 
-%% @spec (XML_Element, Attr_Name, Attr_Value) -> New_XML_Element
+%% -spec (XML_Element, Attr_Name, Attr_Value) -> New_XML_Element
 %%     XML_Element = xmlel() | xmlel_old()
 %%     Attr_Name = binary()
 %%     Attr_Value = binary() | string() | atom() | integer()
 %%     New_XML_Element = xmlel() | xmlel_old()
 %% @doc Add a new attribute or change the value of an existing attribute.
 
--spec(set_attribute/3 ::
+-spec set_attribute
       (xmlel(), attributename(), binary() | string() | atom() | integer()) ->
 	     xmlel();
       (xmlel_old(), attributename(), binary() | string() | atom() | integer()) ->
-	     xmlel_old()).
+	     xmlel_old().
 
 set_attribute(#xmlel{attrs = Attrs} = XML_Element, Name, Value) when is_binary(Name)->
     New_Attrs = set_attribute_ns2(Attrs, Name, Value, []),
@@ -1628,7 +1625,7 @@ set_attribute2([Attr | Rest], Name, Value, New_Attrs) ->
 set_attribute2([], Name, Value, New_Attrs) ->
     New_Attrs ++ [set_attr_value({Name, undefined}, Value)].
 
-%% @spec (XML_Element, NS, Attr_Name, Attr_Value) -> New_XML_Element
+%% -spec (XML_Element, NS, Attr_Name, Attr_Value) -> New_XML_Element
 %%     XML_Element = xmlel()
 %%     NS = atom() | string()
 %%     Attr_Name = binary()
@@ -1637,9 +1634,8 @@ set_attribute2([], Name, Value, New_Attrs) ->
 %% @doc Add a new attribute or change the value of an existing attribute
 %% with the same name and the `NS' namespace URI.
 
--spec(set_attribute/4 ::
-      (xmlel(), xmlname(), attributename(), binary() | string() | atom() | integer()) ->
-	     xmlel()).
+-spec set_attribute
+      (xmlel(), xmlname(), attributename(), binary() | string() | atom() | integer()) -> xmlel().
 
 set_attribute(#xmlel{attrs = Attrs} = XML_Element, NS, Name, Value) when is_binary(Name) ->
     New_Attrs = set_attribute_ns2(Attrs, NS, Name, Value, []),
@@ -1656,7 +1652,7 @@ set_attribute_ns2([Attr | Rest], NS, Name, Value, New_Attrs) ->
 set_attribute_ns2([], NS, Name, Value, New_Attrs) ->
     New_Attrs ++ [attribute(NS, Name, Value)].
 
-%% @spec (XML_Element, Attrs_Spec) -> New_XML_Element
+%% -spec (XML_Element, Attrs_Spec) -> New_XML_Element
 %%     XML_Element = xmlel() | xmlel_old()
 %%     Attrs_Spec = [{Name, Value} | {NS, Name, Value} | xmlattr_old() | xmlattr()]
 %%       NS = atom() | string()
@@ -1668,7 +1664,7 @@ set_attribute_ns2([], NS, Name, Value, New_Attrs) ->
 %% Existing attributes are not completly overwritten by the ones present
 %% in `Attrs_Spec'. They are simply updated.
 
--spec(set_attributes/2 ::
+-spec set_attributes
       (xmlel(),
        [xmlattr() |
 	{attributename(), binary() | string() | atom() | integer()} |
@@ -1677,7 +1673,7 @@ set_attribute_ns2([], NS, Name, Value, New_Attrs) ->
       (xmlel_old(),
        [xmlattr_old() |
 	{attributename(), binary() | string() | atom() | integer()}]) ->
-	     xmlel_old()).
+	     xmlel_old().
 
 set_attributes(XML_Element, [{Name, Value} | Rest]) ->
     New_XML_Element = set_attribute(XML_Element, Name, Value),
@@ -1694,7 +1690,7 @@ set_attributes(XML_Element, [#xmlattr{} = Attr | Rest]) ->
 set_attributes(XML_Element, []) ->
     XML_Element.
 
-%% @spec (Attrs, Attr_Name) -> New_Attrs
+%% -spec (Attrs, Attr_Name) -> New_Attrs
 %%     Attrs = [xmlattr()] | [xmlattr_old()]
 %%     Attr_Name = binary()
 %%     New_Attrs = [xmlattr()] | [xmlattr_old()]
@@ -1707,13 +1703,13 @@ set_attributes(XML_Element, []) ->
 %% both clauses take a list() as a first argument. So until it can look
 %% inside those list(), we specify a less strict contract.
 %%
-%% -spec(remove_attribute_from_list/2 ::
+%% -spec remove_attribute_from_list
 %%   ([], attributename())              -> [];
 %%   ([xmlattr()], attributename())     -> [xmlattr()];
-%%   ([xmlattr_old()], attributename()) -> [xmlattr_old()]).
+%%   ([xmlattr_old()], attributename()) -> [xmlattr_old()].
 
--spec(remove_attribute_from_list/2 ::
-      ([xmlattr() | xmlattr_old()], attributename()) -> [xmlattr() | xmlattr_old()]).
+-spec remove_attribute_from_list
+      ([xmlattr() | xmlattr_old()], attributename()) -> [xmlattr() | xmlattr_old()].
 
 remove_attribute_from_list(Attrs, Name)  when is_binary(Name) ->
     remove_attribute_from_list2(Attrs, Name, []).
@@ -1731,7 +1727,7 @@ remove_attribute_from_list2([Attr | Rest], Name, New_Attrs) ->
 remove_attribute_from_list2([], _Name, New_Attrs) ->
     lists:reverse(New_Attrs).
 
-%% @spec (Attrs, NS, Attr_Name) -> New_Attrs
+%% -spec (Attrs, NS, Attr_Name) -> New_Attrs
 %%     Attrs = [xmlattr()]
 %%     Attr_Name = binary()
 %%     New_Attrs = [xmlattr()]
@@ -1741,8 +1737,8 @@ remove_attribute_from_list2([], _Name, New_Attrs) ->
 %% If `Attr_Name' doesn't exist, this function has no effect (it won't
 %% return an error).
 
--spec(remove_attribute_from_list/3 ::
-      ([xmlattr()], xmlname(), attributename()) -> [xmlattr()]).
+-spec remove_attribute_from_list
+      ([xmlattr()], xmlname(), attributename()) -> [xmlattr()].
 
 remove_attribute_from_list(Attrs, NS, Name) when is_binary(Name) ->
     remove_attribute_from_list2(Attrs, NS, Name, []).
@@ -1758,7 +1754,7 @@ remove_attribute_from_list2([Attr | Rest], NS, Name, New_Attrs) ->
 remove_attribute_from_list2([], _NS, _Name, New_Attrs) ->
     lists:reverse(New_Attrs).
 
-%% @spec (XML_Element, Attr_Name) -> New_XML_Element
+%% -spec (XML_Element, Attr_Name) -> New_XML_Element
 %%     XML_Element = xmlel() | xmlel_old()
 %%     Attr_Name = binary()
 %%     New_XML_Element = xmlel() | xmlel_old()
@@ -1767,9 +1763,9 @@ remove_attribute_from_list2([], _NS, _Name, New_Attrs) ->
 %% If `Attr_Name' doesn't exist, this function has no effect (it won't
 %% return an error).
 
--spec(remove_attribute/2 ::
+-spec remove_attribute
       (xmlel(), attributename())     -> xmlel();
-      (xmlel_old(), attributename()) -> xmlel_old()).
+      (xmlel_old(), attributename()) -> xmlel_old().
 
 remove_attribute(#xmlel{attrs = Attrs} = XML_Element, Name) when is_binary(Name) ->
     New_Attrs = remove_attribute_from_list(Attrs, Name),
@@ -1779,7 +1775,7 @@ remove_attribute(#xmlelement{attrs = Attrs} = XML_Element, Name) ->
     New_Attrs = remove_attribute_from_list(Attrs, Name),
     XML_Element#xmlelement{attrs = New_Attrs}.
 
-%% @spec (XML_Element, NS, Attr_Name) -> New_XML_Element
+%% -spec (XML_Element, NS, Attr_Name) -> New_XML_Element
 %%     XML_Element = xmlel()
 %%     NS = atom() | string()
 %%     Attr_Name = binary()
@@ -1790,8 +1786,8 @@ remove_attribute(#xmlelement{attrs = Attrs} = XML_Element, Name) ->
 %% If `Attr_Name' doesn't exist, this function has no effect (it won't
 %% return an error).
 
--spec(remove_attribute/3 ::
-      (xmlel(), xmlname(), attributename()) -> xmlel()).
+-spec remove_attribute
+      (xmlel(), xmlname(), attributename()) -> xmlel().
 
 remove_attribute(#xmlel{attrs = Attrs} = XML_Element, NS, Name) when is_binary(Name) ->
     New_Attrs = remove_attribute_from_list(Attrs, NS, Name),
@@ -1802,7 +1798,7 @@ remove_attribute(#xmlel{attrs = Attrs} = XML_Element, NS, Name) when is_binary(N
 %% This is similar to the DOM interface but NOT compliant.
 %% --------------------------------------------------------------------
 
-%% @spec (Name) -> XML_Element
+%% -spec (Name) -> XML_Element
 %%     Name = atom() | string()
 %%     XML_Element = xmlel()
 %% @doc Create an XML element with the name `Name' but no namespace.
@@ -1815,12 +1811,12 @@ remove_attribute(#xmlel{attrs = Attrs} = XML_Element, NS, Name) when is_binary(N
 %% XML_Element = #xmlel{name = Name}.
 %% '''
 
--spec(element/1 :: (xmlname()) -> xmlel()).
+-spec element(xmlname()) -> xmlel().
 
 element(Name) ->
     #xmlel{name = Name}.
 
-%% @spec (NS, Name) -> XML_Element
+%% -spec (NS, Name) -> XML_Element
 %%     NS = atom() | string() | undefined
 %%     Name = atom() | string()
 %%     XML_Element = xmlel()
@@ -1831,12 +1827,12 @@ element(Name) ->
 %% XML_Element = #xmlel{ns = NS, name = Name}.
 %% '''
 
--spec(element/2 :: (xmlname(), xmlname()) -> xmlel()).
+-spec element(xmlname(), xmlname()) -> xmlel().
 
 element(NS, Name) ->
     #xmlel{ns = NS, name = Name}.
 
-%% @spec (NS, Name, Attrs, Children) -> XML_Element
+%% -spec (NS, Name, Attrs, Children) -> XML_Element
 %%     NS = atom() | string() | undefined
 %%     Name = atom() | string()
 %%     Attrs = [xmlattr()]
@@ -1849,46 +1845,46 @@ element(NS, Name) ->
 %% XML_Element = #xmlel{ns = NS, name = Name}.
 %% '''
 
--spec(element/4 ::
-      (xmlname(), xmlname(), [xmlattr()], [xmlel() | xmlcdata()]) -> xmlel()).
+-spec element
+      (xmlname(), xmlname(), [xmlattr()], [xmlel() | xmlcdata()]) -> xmlel().
 
 element(NS, Name, Attrs, Children) ->
     #xmlel{ns = NS, name = Name, attrs = Attrs, children = Children}.
 
-%% @spec (XML_Element) -> Name
+%% -spec (XML_Element) -> Name
 %%     XML_Element = xmlel() | xmlel_old()
 %%     Name = list()
 %% @doc Return the name of an element as list, regardless of the
 %% original encoding.
 
--spec(get_name_as_list/1 :: (xmlel_any()) -> string()).
+-spec get_name_as_list(xmlel_any()) -> string().
 
 get_name_as_list(#xmlel{name = Name}) ->
     as_list(Name);
 get_name_as_list(#xmlelement{name = Name}) ->
     as_list(Name).
 
-%% @spec (XML_Element) -> Name
+%% -spec (XML_Element) -> Name
 %%     XML_Element = xmlel() | xmlel_old()
 %%     Name = atom()
 %% @doc Return the name of an element as atom, regardless of the
 %% original encoding.
 
--spec(get_name_as_atom/1 :: (xmlel_any()) -> atom()).
+-spec get_name_as_atom(xmlel_any()) -> atom().
 
 get_name_as_atom(#xmlel{name = Name}) ->
     as_atom(Name);
 get_name_as_atom(#xmlelement{name = Name}) ->
     as_atom(Name).
 
-%% @spec (XML_Element, Name) -> bool()
+%% -spec (XML_Element, Name) -> boolean()
 %%     XML_Element = xmlel() | xmlel_old() | undefined
 %%     Name = atom() | string()
 %% @doc Tell if `XML_Element' is named `Name'.
 %%
 %% It takes care of comparison between string and atom.
 
--spec(element_matches/2 :: (xmlel_any(), xmlname()) -> bool()).
+-spec element_matches(xmlel_any(), xmlname()) -> boolean().
 
 element_matches(#xmlel{name = Name}, Name) ->
     true;
@@ -1912,7 +1908,7 @@ element_matches(#xmlelement{name = Name}, Name_A)
 element_matches(_XML_Element, _Name) ->
     false.
 
-%% @spec (XML_Element, NS, Name) -> bool()
+%% -spec (XML_Element, NS, Name) -> boolean()
 %%     XML_Element = xmlel() | xmlel_old() | undefined
 %%     NS = atom() | string()
 %%     Name = atom() | string()
@@ -1920,7 +1916,7 @@ element_matches(_XML_Element, _Name) ->
 %%
 %% It takes care of comparison between string and atom.
 
--spec(element_matches/3 :: (xmlel(), xmlname(), xmlname()) -> bool()).
+-spec element_matches(xmlel(), xmlname(), xmlname()) -> boolean().
 
 element_matches(#xmlel{ns = NS, name = Name}, NS, Name) ->
     true;
@@ -1949,14 +1945,14 @@ element_matches(#xmlel{ns = NS, name = Name}, NS, Name_A)
 element_matches(_XML_Element, _NS, _Name) ->
     false.
 
-%% @spec (XML_Element, NS) -> bool()
+%% -spec (XML_Element, NS) -> boolean()
 %%     XML_Element = xmlel() | xmlel_old() | undefined
 %%     NS = atom() | string()
 %% @doc Tell if `XML_Element' has the namespace `NS'.
 %%
 %% It takes care of comparison between string and atom.
 
--spec(element_matches_by_ns/2 :: (xmlel(), xmlname()) -> bool()).
+-spec element_matches_by_ns(xmlel(), xmlname()) -> boolean().
 
 element_matches_by_ns(#xmlel{ns = NS}, NS) ->
     true;
@@ -1971,7 +1967,7 @@ element_matches_by_ns(#xmlel{ns = NS}, NS_A)
 element_matches_by_ns(_XML_Element, _NS) ->
     false.
 
-%% @spec (XML_Element, Name) -> XML_Subelement | undefined
+%% -spec (XML_Element, Name) -> XML_Subelement | undefined
 %%     XML_Element = xmlel() | xmlel_old() | undefined
 %%     Name = atom() | string()
 %%     XML_Subelement = xmlel() | xmlel_old()
@@ -1980,8 +1976,8 @@ element_matches_by_ns(_XML_Element, _NS) ->
 %% If no element with the given name is found, it returns `undefined'.
 %% This will only search among direct children.
 
--spec(get_element/2 ::
-      (xmlel_any() | undefined, xmlname()) -> xmlel_any() | undefined).
+-spec get_element
+      (xmlel_any() | undefined, xmlname()) -> xmlel_any() | undefined.
 
 get_element(#xmlel{children = Children}, Name) ->
     get_element2(Children, Name);
@@ -2000,7 +1996,7 @@ get_element2([], _Name) ->
 get_element2(undefined, _Name) ->
     undefined.
 
-%% @spec (XML_Element, NS, Name) -> XML_Subelement | undefined
+%% -spec (XML_Element, NS, Name) -> XML_Subelement | undefined
 %%     XML_Element = xmlel() | undefined
 %%     NS = atom() | string()
 %%     Name = atom() | string()
@@ -2011,8 +2007,8 @@ get_element2(undefined, _Name) ->
 %% If no element with the given name is found, it returns `undefined'.
 %% This will only search among direct children.
 
--spec(get_element/3 ::
-      (xmlel() | undefined, xmlname(), xmlname()) -> xmlel() | undefined).
+-spec get_element
+      (xmlel() | undefined, xmlname(), xmlname()) -> xmlel() | undefined.
 
 get_element(#xmlel{children = Children}, NS, Name) ->
     get_element2(Children, NS, Name);
@@ -2029,7 +2025,7 @@ get_element2([], _NS, _Name) ->
 get_element2(undefined, _NS, _Name) ->
     undefined.
 
-%% @spec (XML_Element, Name) -> [XML_Subelement]
+%% -spec (XML_Element, Name) -> [XML_Subelement]
 %%     XML_Element = xmlel() | xmlel_old() | undefined
 %%     Name = atom() | string()
 %%     XML_Subelement = xmlel() | xmlel_old()
@@ -2038,8 +2034,8 @@ get_element2(undefined, _NS, _Name) ->
 %%
 %% This will only search among direct children.
 
--spec(get_elements/2 ::
-      (xmlel_any() | undefined, xmlname()) -> [xmlel_any()]).
+-spec get_elements
+      (xmlel_any() | undefined, xmlname()) -> [xmlel_any()].
 
 get_elements(#xmlel{children = Children}, Name) ->
     get_elements2(Children, Name);
@@ -2060,7 +2056,7 @@ filter_by_name(Searched_Name) ->
 	    element_matches(XML_Element, Searched_Name)
     end.
 
-%% @spec (XML_Element, NS, Name) -> [XML_Subelement]
+%% -spec (XML_Element, NS, Name) -> [XML_Subelement]
 %%     XML_Element = xmlel() | undefined
 %%     NS = atom() | string()
 %%     Name = atom() | string()
@@ -2070,8 +2066,8 @@ filter_by_name(Searched_Name) ->
 %%
 %% This will only search among direct children.
 
--spec(get_elements/3 ::
-      (xmlel() | undefined, xmlname(), xmlname()) -> [xmlel()]).
+-spec get_elements
+      (xmlel() | undefined, xmlname(), xmlname()) -> [xmlel()].
 
 get_elements(#xmlel{children = Children}, NS, Name) ->
     get_elements2(Children, NS, Name);
@@ -2090,7 +2086,7 @@ filter_by_name(Searched_NS, Searched_Name) ->
 	    element_matches(XML_Element, Searched_NS, Searched_Name)
     end.
 
-%% @spec (XML_Element, NS) -> XML_Subelement | undefined
+%% -spec (XML_Element, NS) -> XML_Subelement | undefined
 %%     XML_Element = xmlel() | undefined
 %%     NS = atom() | string()
 %%     XML_Subelement = xmlel()
@@ -2102,8 +2098,8 @@ filter_by_name(Searched_NS, Searched_Name) ->
 %%
 %% This function is particularly usefull to extract XMPP error codes.
 
--spec(get_element_by_ns/2 ::
-      (xmlel() | undefined, xmlname()) -> xmlel() | undefined).
+-spec get_element_by_ns
+      (xmlel() | undefined, xmlname()) -> xmlel() | undefined.
 
 get_element_by_ns(#xmlel{children = Children}, NS) ->
     get_element_by_ns2(Children, NS);
@@ -2120,13 +2116,13 @@ get_element_by_ns2([], _NS) ->
 get_element_by_ns2(undefined, _NS) ->
     undefined.
 
-%% @spec (XML_Element, Name) -> bool()
+%% -spec (XML_Element, Name) -> boolean()
 %%     XML_Element = xmlel() | xmlel_old() | undefined
 %%     Name = atom() | string()
 %% @doc Check the presence for element `Name' in the children.
 
--spec(has_element/2 ::
-      (xmlel_any() | undefined, xmlname()) -> bool()).
+-spec has_element
+      (xmlel_any() | undefined, xmlname()) -> boolean().
 
 has_element(XML_Element, Name) ->
     case get_element(XML_Element, Name) of
@@ -2134,15 +2130,15 @@ has_element(XML_Element, Name) ->
         _         -> true
     end.
 
-%% @spec (XML_Element, NS, Name) -> bool()
+%% -spec (XML_Element, NS, Name) -> boolean()
 %%     XML_Element = xmlel() | undefined
 %%     NS = atom() | string()
 %%     Name = atom() | string()
 %% @doc Check the presence for element `Name' with `NS' namespace URI in
 %% the children.
 
--spec(has_element/3 ::
-      (xmlel() | undefined, xmlname(), xmlname()) -> bool()).
+-spec has_element
+      (xmlel() | undefined, xmlname(), xmlname()) -> boolean().
 
 has_element(XML_Element, NS, Name) ->
     case get_element(XML_Element, NS, Name) of
@@ -2150,14 +2146,14 @@ has_element(XML_Element, NS, Name) ->
         _         -> true
     end.
 
-%% @spec (XML_Element, NS) -> bool()
+%% -spec (XML_Element, NS) -> boolean()
 %%     XML_Element = xmlel() | undefined
 %%     NS = atom() | string()
 %% @doc Check the presence for any elements with `NS' namespace URI in
 %% the children.
 
--spec(has_element_by_ns/2 ::
-      (xmlel() | undefined, xmlname()) -> bool()).
+-spec has_element_by_ns
+      (xmlel() | undefined, xmlname()) -> boolean().
 
 has_element_by_ns(XML_Element, NS) ->
     case get_element_by_ns(XML_Element, NS) of
@@ -2165,13 +2161,13 @@ has_element_by_ns(XML_Element, NS) ->
         _         -> true
     end.
 
-%% @spec (XML_Element) -> [XML_Subelement]
+%% -spec (XML_Element) -> [XML_Subelement]
 %%     XML_Element = xmlel() | xmlel_old() | undefined
 %%     XML_Subelement = xmlel() | xmlel_old()
 %% @doc Get all the element children of the given element, skipping
 %% non-element nodes likes cdata.
 
--spec(get_child_elements/1 :: (xmlel_any() | undefined) -> [xmlel_any()]).
+-spec get_child_elements(xmlel_any() | undefined) -> [xmlel_any()].
 
 get_child_elements(#xmlel{children = Children}) ->
     get_child_elements2(Children);
@@ -2191,13 +2187,13 @@ is_element(#xmlelement{}) -> true;
 is_element(#xmlel{})      -> true;
 is_element(_)             -> false.
 
-%% @spec (XML_Element, Name) -> New_XML_Element
+%% -spec (XML_Element, Name) -> New_XML_Element
 %%     XML_Element = xmlel() | xmlel_old() | undefined
 %%     Name = atom() | string()
 %%     New_XML_Element = xmlel() | xmlel_old()
 %% @doc Remove the first child with the name `Name'.
 
--spec(remove_element/2 :: (xmlel_any(), xmlname()) -> xmlel_any()).
+-spec remove_element(xmlel_any(), xmlname()) -> xmlel_any().
 
 remove_element(#xmlel{children = Children} = XML_Element, Name) ->
     New_Children = remove_element2(Children, Name),
@@ -2219,14 +2215,14 @@ remove_element3([El | Rest], Name, Result) ->
 remove_element3([], _Name, Result) ->
     lists:reverse(Result).
 
-%% @spec (XML_Element, NS, Name) -> New_XML_Element
+%% -spec (XML_Element, NS, Name) -> New_XML_Element
 %%     XML_Element = xmlel() | undefined
 %%     NS = atom() | string()
 %%     Name = atom() | string()
 %%     New_XML_Element = xmlel()
 %% @doc Remove the first child with the name `Name' in the namespace `NS'.
 
--spec(remove_element/3 :: (xmlel(), xmlname(), xmlname()) -> xmlel()).
+-spec remove_element(xmlel(), xmlname(), xmlname()) -> xmlel().
 
 remove_element(#xmlel{children = Children} = XML_Element, NS, Name) ->
     New_Children = remove_element2(Children, NS, Name),
@@ -2245,13 +2241,13 @@ remove_element3([El | Rest], NS, Name, Result) ->
 remove_element3([], _NS, _Name, Result) ->
     lists:reverse(Result).
 
-%% @spec (XML_Element, NS) -> New_XML_Element
+%% -spec (XML_Element, NS) -> New_XML_Element
 %%     XML_Element = xmlel() | undefined
 %%     NS = atom() | string()
 %%     New_XML_Element = xmlel()
 %% @doc Remove the first child in the namespace `NS'.
 
--spec(remove_element_by_ns/2 :: (xmlel(), xmlname()) -> xmlel()).
+-spec remove_element_by_ns(xmlel(), xmlname()) -> xmlel().
 
 remove_element_by_ns(#xmlel{children = Children} = XML_Element, NS) ->
     New_Children = remove_element_by_ns2(Children, NS),
@@ -2270,13 +2266,13 @@ remove_element_by_ns3([El | Rest], NS, Result) ->
 remove_element_by_ns3([], _NS, Result) ->
     lists:reverse(Result).
 
-%% @spec (XML_Element, Name) -> New_XML_Element
+%% -spec (XML_Element, Name) -> New_XML_Element
 %%     XML_Element = xmlel() | xmlel_old() | undefined
 %%     Name = atom() | string()
 %%     New_XML_Element = xmlel() | xmlel_old()
 %% @doc Remove all children with the name `Name'.
 
--spec(remove_elements/2 :: (xmlel_any(), xmlname()) -> xmlel_any()).
+-spec remove_elements(xmlel_any(), xmlname()) -> xmlel_any().
 
 remove_elements(#xmlel{children = Children} = XML_Element, Name) ->
     New_Children = remove_elements2(Children, Name),
@@ -2298,14 +2294,14 @@ remove_elements3([El | Rest], Name, Result) ->
 remove_elements3([], _Name, Result) ->
     lists:reverse(Result).
 
-%% @spec (XML_Element, NS, Name) -> New_XML_Element
+%% -spec (XML_Element, NS, Name) -> New_XML_Element
 %%     XML_Element = xmlel() | undefined
 %%     NS = atom() | string()
 %%     Name = atom() | string()
 %%     New_XML_Element = xmlel()
 %% @doc Remove all children with the name `Name' in the namespace `NS'.
 
--spec(remove_elements/3 :: (xmlel(), xmlname(), xmlname()) -> xmlel()).
+-spec remove_elements(xmlel(), xmlname(), xmlname()) -> xmlel().
 
 remove_elements(#xmlel{children = Children} = XML_Element, NS, Name) ->
     New_Children = remove_elements2(Children, NS, Name),
@@ -2324,13 +2320,13 @@ remove_elements3([El | Rest], NS, Name, Result) ->
 remove_elements3([], _NS, _Name, Result) ->
     lists:reverse(Result).
 
-%% @spec (XML_Element, NS) -> New_XML_Element
+%% -spec (XML_Element, NS) -> New_XML_Element
 %%     XML_Element = xmlel() | undefined
 %%     NS = atom() | string()
 %%     New_XML_Element = xmlel()
 %% @doc Remove all children in the namespace `NS'.
 
--spec(remove_elements_by_ns/2 :: (xmlel(), xmlname()) -> xmlel()).
+-spec remove_elements_by_ns(xmlel(), xmlname()) -> xmlel().
 
 remove_elements_by_ns(#xmlel{children = Children} = XML_Element, NS) ->
     New_Children = remove_elements_by_ns2(Children, NS),
@@ -2349,13 +2345,13 @@ remove_elements_by_ns3([El | Rest], NS, Result) ->
 remove_elements_by_ns3([], _NS, Result) ->
     lists:reverse(Result).
 
-%% @spec (XML_Element, Child) -> New_XML_Element
+%% -spec (XML_Element, Child) -> New_XML_Element
 %%     XML_Element = xmlel() | xmlel_old()
 %%     Child = xmlel() | xmlel_old() | xmlcdata()
 %%     New_XML_Element = xmlel() | xmlel_old()
 %% @doc Prepend `Child' to `XML_Element''s children list.
 
--spec(prepend_child/2 :: (xmlel_any(), xmlnode()) -> xmlel_any()).
+-spec prepend_child(xmlel_any(), xmlnode()) -> xmlel_any().
 
 prepend_child(#xmlel{children = undefined} = XML_Element, Child) ->
     New_Children = [Child],
@@ -2370,13 +2366,13 @@ prepend_child(#xmlelement{children = Children} = XML_Element, Child) ->
     New_Children = [Child | Children],
     XML_Element#xmlelement{children = New_Children}.
 
-%% @spec (XML_Element, Children) -> New_XML_Element
+%% -spec (XML_Element, Children) -> New_XML_Element
 %%     XML_Element = xmlel() | xmlel_old()
 %%     Children = [xmlel() | xmlel_old() | xmlcdata()]
 %%     New_XML_Element = xmlel() | xmlel_old()
 %% @doc Prepend every `Children' to `XML_Element''s children list.
 
--spec(prepend_children/2 :: (xmlel_any(), [xmlnode()]) -> xmlel_any()).
+-spec prepend_children(xmlel_any(), [xmlnode()]) -> xmlel_any().
 
 prepend_children(#xmlel{children = undefined} = XML_Element,
 		 New_Children) ->
@@ -2393,13 +2389,13 @@ prepend_children(#xmlelement{children = Children} = XML_Element,
     Concat_Children = New_Children ++ Children,
     XML_Element#xmlelement{children = Concat_Children}.
 
-%% @spec (XML_Element, Child) -> New_XML_Element
+%% -spec (XML_Element, Child) -> New_XML_Element
 %%     XML_Element = xmlel() | xmlel_old()
 %%     Child = xmlel() | xmlel_old() | xmlcdata()
 %%     New_XML_Element = xmlel() | xmlel_old()
 %% @doc Append `Child' to `XML_Element''s children list.
 
--spec(append_child/2 :: (xmlel_any(), xmlnode()) -> xmlel_any()).
+-spec append_child(xmlel_any(), xmlnode()) -> xmlel_any().
 
 append_child(#xmlel{children = undefined} = XML_Element, Child) ->
     New_Children = [Child],
@@ -2414,13 +2410,13 @@ append_child(#xmlelement{children = Children} = XML_Element, Child) ->
     New_Children = Children ++ [Child],
     XML_Element#xmlelement{children = New_Children}.
 
-%% @spec (XML_Element, Children) -> New_XML_Element
+%% -spec (XML_Element, Children) -> New_XML_Element
 %%     XML_Element = xmlel() | xmlel_old()
 %%     Children = [xmlel() | xmlel_old() | xmlcdata()]
 %%     New_XML_Element = xmlel() | xmlel_old()
 %% @doc Append every `Children' to `XML_Element''s children list.
 
--spec(append_children/2 :: (xmlel_any(), [xmlnode()]) -> xmlel_any()).
+-spec append_children(xmlel_any(), [xmlnode()]) -> xmlel_any().
 
 append_children(#xmlel{children = undefined} = XML_Element,
 		New_Children) ->
@@ -2437,7 +2433,7 @@ append_children(#xmlelement{children = Children} = XML_Element,
     Concat_Children = Children ++ New_Children,
     XML_Element#xmlelement{children = Concat_Children}.
 
-%% @spec (XML_Element, Old_Child, New_Child) -> New_XML_Element
+%% -spec (XML_Element, Old_Child, New_Child) -> New_XML_Element
 %%     XML_Element = xmlel() | xmlel_old()
 %%     Old_Child = xmlel() | xmlel_old() | xmlcdata()
 %%     New_Child = xmlel() | xmlel_old() | xmlcdata()
@@ -2445,7 +2441,7 @@ append_children(#xmlelement{children = Children} = XML_Element,
 %% @doc Replace `Old_Child' by `New_Child' in `XML_Element' children
 %% list.
 
--spec(replace_child/3 :: (xmlel_any(), xmlnode(), xmlnode()) -> xmlel_any()).
+-spec replace_child(xmlel_any(), xmlnode(), xmlnode()) -> xmlel_any().
 
 replace_child(#xmlel{children = Children} = XML_Element,
 	      Old_Child, New_Child) ->
@@ -2468,7 +2464,7 @@ replace_child2(Children, Old_Child, New_Child) ->
      end || C <- Children
 	       ].
 
-%% @spec (XML_Element, Children) -> New_XML_Element
+%% -spec (XML_Element, Children) -> New_XML_Element
 %%     XML_Element = xmlel() | xmlel_old()
 %%     Children = [xmlel() | xmlel_old() | xmlcdata()]
 %%     New_XML_Element = xmlel() | xmlel_old()
@@ -2476,7 +2472,7 @@ replace_child2(Children, Old_Child, New_Child) ->
 %%
 %% Any existing child is removed.
 
--spec(set_children/2 :: (xmlel_any(), [xmlnode()]) -> xmlel_any()).
+-spec set_children(xmlel_any(), [xmlnode()]) -> xmlel_any().
 
 set_children(#xmlel{} = XML_Element, New_Children)
   when is_list(New_Children) ->
@@ -2485,7 +2481,7 @@ set_children(#xmlelement{} = XML_Element, New_Children)
   when is_list(New_Children) ->
     XML_Element#xmlelement{children = New_Children}.
 
-%% @spec (Pred, XML_Element) -> New_XML_Element
+%% -spec (Pred, XML_Element) -> New_XML_Element
 %%     Pred = function()
 %%     Child = xmlel() | xmlel_old()
 %%     XML_Element = xmlel() | xmlel_old()
@@ -2494,13 +2490,13 @@ set_children(#xmlelement{} = XML_Element, New_Children)
 %%
 %% `Pred' has the following prototype:
 %% ```
-%% fun(XML_Element, Child) -> bool()
+%% fun(XML_Element, Child) -> boolean()
 %% '''
 %%
 %% If `children' is `undefined', the function isn't called.
 
--spec(filter/2 ::
-      (fun((xmlel_any(), xmlnode()) -> bool()), xmlel_any()) -> xmlel_any()).
+-spec filter
+      (fun((xmlel_any(), xmlnode()) -> boolean()), xmlel_any()) -> xmlel_any().
 
 filter(Pred, #xmlel{children = Children} = XML_Element)
   when is_function(Pred, 2) ->
@@ -2516,7 +2512,7 @@ filter2(_Pred, _XML_Element, undefined) ->
 filter2(Pred, XML_Element, Children) ->
     [C || C <- Children, Pred(XML_Element, C)].
 
-%% @spec (Fun, Acc0, XML_Element) -> Acc1
+%% -spec (Fun, Acc0, XML_Element) -> Acc1
 %%     Fun = function()
 %%     Acc_In = term()
 %%     Child = xmlel() | xmlel_old() | undefined
@@ -2532,9 +2528,8 @@ filter2(Pred, XML_Element, Children) ->
 %% fun(Acc_In, XML_Element, Child) -> Acc_Out
 %% '''
 
--spec(fold/3 ::
-      (fun((any(), xmlel_any(), xmlnode() | undefined) -> any()), any(), xmlel_any()) ->
-	     any()).
+-spec fold
+      (fun((any(), xmlel_any(), xmlnode() | undefined) -> any()), any(), xmlel_any()) -> any().
 
 fold(Fun, Acc0, #xmlel{children = Children} = XML_Element)
   when is_function(Fun, 3) ->
@@ -2550,7 +2545,7 @@ fold2(Fun, Acc_In, XML_Element, [Child | Rest]) ->
 fold2(_Fun, Acc_Out, _XML_Element, []) ->
     Acc_Out.
 
-%% @spec (Fun, XML_Element) -> ok
+%% -spec (Fun, XML_Element) -> ok
 %%     Fun = function()
 %%     Child = xmlel() | xmlel_old() | undefined
 %%     XML_Element = xmlel() | xmlel_old()
@@ -2563,9 +2558,8 @@ fold2(_Fun, Acc_Out, _XML_Element, []) ->
 %% fun(XML_Element, Child) -> Ignored
 %% '''
 
--spec(foreach/2 ::
-      (fun((xmlel_any(), xmlnode() | undefined) -> any()), xmlel_any()) ->
-	     ok).
+-spec foreach
+      (fun((xmlel_any(), xmlnode() | undefined) -> any()), xmlel_any()) -> ok.
 
 foreach(Fun, #xmlel{children = Children} = XML_Element)
   when is_function(Fun, 2) ->
@@ -2583,7 +2577,7 @@ foreach2(Fun, XML_Element, [Child | Rest]) ->
 foreach2(_Fun, _XML_Element, []) ->
     ok.
 
-%% @spec(Fun, XML_Element) -> New_XML_Element
+%% -spec(Fun, XML_Element) -> New_XML_Element
 %%     Fun = function()
 %%     Child = xmlel() | xmlel_old()
 %%     New_Child = xmlel() | xmlel_old()
@@ -2599,9 +2593,9 @@ foreach2(_Fun, _XML_Element, []) ->
 %%
 %% If `children' is `undefined', the function isn't called.
 
--spec(map/2 ::
+-spec map
       (fun((xmlel_any(), xmlnode()) -> xmlnode()), xmlel_any()) ->
-	     xmlel_any()).
+	     xmlel_any().
 
 map(Fun, #xmlel{children = Children} = XML_Element)
   when is_function(Fun, 2) ->
@@ -2624,23 +2618,23 @@ map2(_Fun, _XML_Element, []) ->
 %% This is similar to the DOM interface but NOT compliant.
 %% --------------------------------------------------------------------
 
-%% @spec (Value) -> CData
+%% -spec (Value) -> CData
 %%     Value = binary() | string() | atom() | integer()
 %%     CData = xmlcdata()
 %% @doc Create a CData node from a value.
 
--spec(cdata/1 :: (binary() | string() | atom() | integer()) -> xmlcdata()).
+-spec cdata(binary() | string() | atom() | integer()) -> xmlcdata().
 
 cdata(CData) ->
     #xmlcdata{cdata = exmpp_utils:any_to_binary(CData)}.
 
-%% @spec (Children) -> CData
+%% -spec (Children) -> CData
 %%     Children = [xmlel() | xmlel_old() | xmlcdata()] | undefined
 %%     CData = binary()
 %% @doc Concatenate and return any character data from the given
 %% children list.
 
--spec(get_cdata_from_list/1 :: ([xmlnode()] | undefined) -> binary()).
+-spec get_cdata_from_list([xmlnode()] | undefined) -> binary().
 
 get_cdata_from_list(undefined) ->
     <<>>;
@@ -2656,18 +2650,18 @@ get_cdata_from_list2([_ | Rest], Data) ->
 get_cdata_from_list2([], Data) ->
     lists:reverse(Data).
 
-%% @spec (Children) -> CData
+%% -spec (Children) -> CData
 %%     Children = [xmlel() | xmlel_old() | xmlcdata()] | undefined
 %%     CData = string()
 %% @doc Concatenate and return any character data from the given
 %% children list.
 
--spec(get_cdata_from_list_as_list/1 :: ([xmlnode()] | undefined) -> string()).
+-spec get_cdata_from_list_as_list([xmlnode()] | undefined) -> string().
 
 get_cdata_from_list_as_list(Children) ->
     binary_to_list(get_cdata_from_list(Children)).
 
-%% @spec (XML_Element) -> CData
+%% -spec (XML_Element) -> CData
 %%     XML_Element = xmlel() | xmlel_old() | undefined
 %%     CData = binary()
 %% @doc Concatenate and return any character data of the given XML
@@ -2677,7 +2671,7 @@ get_cdata_from_list_as_list(Children) ->
 %% doesn't take a list of children like the old `get_cdata/1', use
 %% {@link get_cdata_from_list/1} for this purpose!
 
--spec(get_cdata/1 :: (xmlel_any()) -> binary()).
+-spec get_cdata(xmlel_any()) -> binary().
 
 get_cdata(#xmlel{children = Children}) ->
     get_cdata_from_list(Children);
@@ -2688,24 +2682,24 @@ get_cdata(undefined) ->
     %% exmpp_xml:get_cdata(exmpp_xml:get_element(XML_El, body))
     <<>>.
 
-%% @spec (XML_Element) -> CData
+%% -spec (XML_Element) -> CData
 %%     XML_Element = xmlel() | xmlel_old() | undefined
 %%     CData = string()
 %% @doc Concatenate and return any character data of the given XML
 %% element.
 
--spec(get_cdata_as_list/1 :: (xmlel_any()) -> string()).
+-spec get_cdata_as_list(xmlel_any()) -> string().
 
 get_cdata_as_list(XML_Element) ->
     binary_to_list(get_cdata(XML_Element)).
 
-%% @spec (Children) -> New_Children
+%% -spec (Children) -> New_Children
 %%     Children = [xmlel() | xmlel_old() | xmlcdata()] | undefined
 %%     New_Children = [xmlel() | xmlel_old() | xmlcdata()] | undefined
 %% @doc Regroup all splitted {@link xmlcdata()} in a unique one.
 
--spec(normalize_cdata_in_list/1 ::
-      ([xmlnode()] | undefined) -> [xmlnode()] | undefined).
+-spec normalize_cdata_in_list
+      ([xmlnode()] | undefined) -> [xmlnode()] | undefined.
 
 normalize_cdata_in_list(undefined) ->
     undefined;
@@ -2730,7 +2724,7 @@ normalize_cdata_in_list2([XML_Node | Rest], Current_CDatas, New_Children) ->
 		    end,
     normalize_cdata_in_list2(Rest, [], New_Children1).
 
-%% @spec (XML_Element) -> New_XML_Element
+%% -spec (XML_Element) -> New_XML_Element
 %%     XML_Element = xmlel() | xmlel_old()
 %%     New_XML_Element = xmlel() | xmlel_old()
 %% @doc Regroup all splitted {@link xmlcdata()} in a unique one
@@ -2739,7 +2733,7 @@ normalize_cdata_in_list2([XML_Node | Rest], Current_CDatas, New_Children) ->
 %% One caveats is the reconstructed {@link xmlcdata()} is appended at
 %% the end of the children list.
 
--spec(normalize_cdata/1 :: (xmlel_any()) -> xmlel_any()).
+-spec normalize_cdata(xmlel_any()) -> xmlel_any().
 
 normalize_cdata(#xmlel{children = Children} = XML_Element) ->
     New_Children = normalize_cdata_in_list(Children),
@@ -2748,7 +2742,7 @@ normalize_cdata(#xmlelement{children = Children} = XML_Element) ->
     New_Children = normalize_cdata_in_list(Children),
     XML_Element#xmlelement{children = New_Children}.
 
-%% @spec (Children, CData) -> New_Children
+%% -spec (Children, CData) -> New_Children
 %%     Children = [xmlel() | xmlel_old() | xmlcdata()] | undefined
 %%     CData = binary() | string() | atom() | integer()
 %%     New_Children = [xmlel() | xmlel_old() | xmlcdata()]
@@ -2756,9 +2750,9 @@ normalize_cdata(#xmlelement{children = Children} = XML_Element) ->
 %%
 %% The new `CData' is placed at the end of the children list.
 
--spec(set_cdata_in_list/2 ::
+-spec set_cdata_in_list
       ([xmlnode()] | undefined, binary() | string() | atom() | integer()) ->
-	     [xmlnode()]).
+	     [xmlnode()].
 
 set_cdata_in_list(undefined, CData) ->
     [cdata(CData)];
@@ -2766,7 +2760,7 @@ set_cdata_in_list(Children, CData) ->
     Purged_Children = remove_cdata_from_list(Children),
     Purged_Children ++ [cdata(CData)].
 
-%% @spec (XML_Element, CData) -> New_XML_Element
+%% -spec (XML_Element, CData) -> New_XML_Element
 %%     XML_Element = xmlel() | xmlel_old()
 %%     CData = binary() | string() | atom() | integer()
 %%     New_XML_Element = xmlel() | xmlel_old()
@@ -2774,8 +2768,8 @@ set_cdata_in_list(Children, CData) ->
 %%
 %% The new `CData' is placed at the end of the children list.
 
--spec(set_cdata/2 ::
-      (xmlel_any(), binary() | string() | atom() | integer()) -> xmlel_any()).
+-spec set_cdata
+      (xmlel_any(), binary() | string() | atom() | integer()) -> xmlel_any().
 
 set_cdata(#xmlel{children = Children} = XML_Element, CData) ->
     New_Children = set_cdata_in_list(Children, CData),
@@ -2784,29 +2778,29 @@ set_cdata(#xmlelement{children = Children} = XML_Element, CData) ->
     New_Children = set_cdata_in_list(Children, CData),
     XML_Element#xmlelement{children = New_Children}.
 
-%% @spec (Children, CData) -> New_Children
+%% -spec (Children, CData) -> New_Children
 %%     Children = [xmlel() | xmlel_old() | xmlcdata()] | undefined
 %%     CData = binary() | string() | atom() | integer()
 %%     New_Children = [xmlel() | xmlel_old() | xmlcdata()]
 %% @doc Append `CData' to `Children' list.
 
--spec(append_cdata_to_list/2 ::
+-spec append_cdata_to_list
       ([xmlnode()] | undefined, binary() | string() | atom() | integer()) ->
-	     [xmlnode()]).
+	     [xmlnode()].
 
 append_cdata_to_list(undefined, CData) ->
     [cdata(CData)];
 append_cdata_to_list(Children, CData) ->
     Children ++ [cdata(CData)].
 
-%% @spec (XML_Element, CData) -> New_XML_Element
+%% -spec (XML_Element, CData) -> New_XML_Element
 %%     XML_Element = xmlel() | xmlel_old()
 %%     CData = binary() | string() | atom() | integer()
 %%     New_XML_Element = xmlel() | xmlel_old()
 %% @doc Append `Child' to `XML_Element''s children list.
 
--spec(append_cdata/2 ::
-      (xmlel_any(), binary() | string() | atom() | integer()) -> xmlel_any()).
+-spec append_cdata
+      (xmlel_any(), binary() | string() | atom() | integer()) -> xmlel_any().
 
 append_cdata(#xmlel{children = Children} = XML_Element, CData) ->
     New_Children = append_cdata_to_list(Children, CData),
@@ -2815,14 +2809,14 @@ append_cdata(#xmlelement{children = Children} = XML_Element, CData) ->
     New_Children = append_cdata_to_list(Children, CData),
     XML_Element#xmlelement{children = New_Children}.
 
-%% @spec (Children) -> New_Children
+%% -spec (Children) -> New_Children
 %%     Children = [xmlel() | xmlel_old() | xmlcdata()] | undefined
 %%     New_Children = [xmlel() | xmlel_old()] | undefined
 %% @doc Remove any character data from the given XML element children
 %% list.
 
--spec(remove_cdata_from_list/1 ::
-      ([xmlnode()] | undefined) -> [xmlnode()] | undefined).
+-spec remove_cdata_from_list
+      ([xmlnode()] | undefined) -> [xmlnode()] | undefined.
 
 remove_cdata_from_list(undefined) ->
     undefined;
@@ -2832,7 +2826,7 @@ remove_cdata_from_list(Children) ->
 remove_cdata_from_list2(#xmlcdata{}) -> false;
 remove_cdata_from_list2(_)           -> true.
 
-%% @spec (XML_Element) -> New_XML_Element
+%% -spec (XML_Element) -> New_XML_Element
 %%     XML_Element = xmlel() | xmlel_old()
 %%     New_XML_Element = xmlel() | xmlel_old()
 %% @doc Remove any character data from the given XML element.
@@ -2841,7 +2835,7 @@ remove_cdata_from_list2(_)           -> true.
 %% `remove_cdata/1', use {@link remove_cdata_from_list/1} for this
 %% purpose!
 
--spec(remove_cdata/1 :: (xmlel_any()) -> xmlel_any()).
+-spec remove_cdata(xmlel_any()) -> xmlel_any().
 
 remove_cdata(#xmlel{children = Children} = XML_Element) ->
     New_Children = remove_cdata_from_list(Children),
@@ -2850,7 +2844,7 @@ remove_cdata(#xmlelement{children = Children} = XML_Element) ->
     New_Children = remove_cdata_from_list(Children),
     XML_Element#xmlelement{children = New_Children}.
 
-%% @spec (CData) -> bool()
+%% -spec (CData) -> boolean()
 %%     CData = xmlel() | xmlel_old() | xmlcdata()
 %% @doc Tell if a text node contains only whitespaces.
 %%
@@ -2859,7 +2853,7 @@ remove_cdata(#xmlelement{children = Children} = XML_Element) ->
 %%
 %% Whitespaces are `\s', `\t', `\n' and `\r'.
 
--spec(is_whitespace/1 :: (xmlnode()) -> bool()).
+-spec is_whitespace(xmlnode()) -> boolean().
 
 is_whitespace(#xmlcdata{cdata = CData}) ->
     is_whitespace2(CData);
@@ -2874,29 +2868,29 @@ is_whitespace2(<<>>) ->
 is_whitespace2(_CData) ->
     false.
 
-%% @spec (Children) -> New_Children
+%% -spec (Children) -> New_Children
 %%     Children = [xmlel() | xmlel_old() | xmlcdata()] | undefined
 %%     New_Children = [xmlel() | xmlel_old() | xmlcdata()] | undefined
 %% @doc Remove text nodes containing only whitespaces.
 %%
 %% @see is_whitespace/1.
 
--spec(remove_whitespaces_from_list/1 ::
-      ([xmlnode()] | undefined) -> [xmlnode()] | undefined).
+-spec remove_whitespaces_from_list
+      ([xmlnode()] | undefined) -> [xmlnode()] | undefined.
 
 remove_whitespaces_from_list(undefined) ->
     undefined;
 remove_whitespaces_from_list(Children) ->
     [Child || Child <- Children, not is_whitespace(Child)].
 
-%% @spec (XML_Element) -> New_XML_Element
+%% -spec (XML_Element) -> New_XML_Element
 %%     XML_Element = xmlel() | xmlel_old()
 %%     New_XML_Element = xmlel() | xmlel_old()
 %% @doc Remove text nodes containing only whitespaces.
 %%
 %% @see is_whitespace/1.
 
--spec(remove_whitespaces/1 :: (xmlel_any()) -> xmlel_any()).
+-spec remove_whitespaces(xmlel_any()) -> xmlel_any().
 
 remove_whitespaces(#xmlel{children = Children} = XML_Element) ->
     New_Children = remove_whitespaces_from_list(Children),
@@ -2905,7 +2899,7 @@ remove_whitespaces(#xmlelement{children = Children} = XML_Element) ->
     New_Children = remove_whitespaces_from_list(Children),
     XML_Element#xmlelement{children = New_Children}.
 
-%% @spec (XML_Element) -> New_XML_Element
+%% -spec (XML_Element) -> New_XML_Element
 %%     XML_Element = xmlel() | xmlel_old()
 %%     New_XML_Element = xmlel() | xmlel_old()
 %% @doc Remove text nodes containing only whitespaces in every elements
@@ -2913,7 +2907,7 @@ remove_whitespaces(#xmlelement{children = Children} = XML_Element) ->
 %%
 %% @see is_whitespace/1.
 
--spec(remove_whitespaces_deeply/1 :: (xmlel_any()) -> xmlel_any()).
+-spec remove_whitespaces_deeply(xmlel_any()) -> xmlel_any().
 
 remove_whitespaces_deeply(#xmlel{children = Children} = XML_Element) ->
     New_Children = remove_whitespaces_deeply2(Children),
@@ -2945,7 +2939,7 @@ remove_whitespaces_deeply3([], Result) ->
 %% Function to walk the tree.
 %% --------------------------------------------------------------------
 
-%% @spec (XML_Element, Path) -> XML_Subelement | Attr_Value | CData | Not_Found
+%% -spec (XML_Element, Path) -> XML_Subelement | Attr_Value | CData | Not_Found
 %%     XML_Element = xmlel() | xmlel_old()
 %%     Path = [pathcomponent()]
 %%     XML_Subelement = xmlel() | xmlel_old()
@@ -2970,8 +2964,8 @@ remove_whitespaces_deeply3([], Result) ->
 %% isn't found while walking through the path, an empty string is
 %% returned.
 
--spec(get_path/2 ::
-      (xmlel(), xmlpath()) -> xmlel_any() | binary() | string() | undefined).
+-spec get_path
+      (xmlel(), xmlpath()) -> xmlel_any() | binary() | string() | undefined.
 
 get_path(XML_Element, [{element, Name} | Path]) ->
     case get_element(XML_Element, Name) of
@@ -3033,19 +3027,19 @@ get_path_not_found(Path) ->
 %% Converters.
 %% --------------------------------------------------------------------
 
-%% @spec (XML_NS_Element) -> XML_Element
+%% -spec (XML_NS_Element) -> XML_Element
 %%     XML_NS_Element = xmlel() | xmlel_old() | xmlcdata()
 %%     XML_Element = xmlel_old() | xmlcdata()
 %% @doc Convert an {@link xmlel()} to an {@link xmlel_old()} tuple.
 %%
 %% Other tuples are ignored.
 
--spec(xmlel_to_xmlelement/1 :: (xmlel()) -> xmlel_old()).
+-spec xmlel_to_xmlelement(xmlel()) -> xmlel_old().
 
 xmlel_to_xmlelement(XML_Element) ->
     xmlel_to_xmlelement(XML_Element, [], []).
 
-%% @spec (XML_NS_Element, Default_NS, Prefixed_NS) -> XML_Element
+%% -spec (XML_NS_Element, Default_NS, Prefixed_NS) -> XML_Element
 %%     XML_NS_Element = xmlel() | xmlel_old() | xmlcdata()
 %%     Default_NS = [NS | Equivalent_NSs]
 %%     Prefixed_NS = [{NS, Prefix}]
@@ -3075,8 +3069,8 @@ xmlel_to_xmlelement(XML_Element) ->
 %%   [?NS_JABBER_CLIENT, ?NS_JABBER_SERVER, ?NS_COMPONENT_ACCEPT]).
 %% '''
 
--spec(xmlel_to_xmlelement/3 ::
-      (xmlel(), xmldefaultnss(), xmlprefixednss()) -> xmlel_old()).
+-spec xmlel_to_xmlelement
+      (xmlel(), xmldefaultnss(), xmlprefixednss()) -> xmlel_old().
 
 xmlel_to_xmlelement(#xmlel{children = Children} = El,
 		    Default_NS, Prefixed_NS) ->
@@ -3298,7 +3292,7 @@ new_auto_prefix2(Prefixed_NS, Seq) ->
         false -> Prefix
     end.
 
-%% @spec (XML_Element) -> XML_NS_Element
+%% -spec (XML_Element) -> XML_NS_Element
 %%     XML_Element = xmlel_old() | xmlcdata()
 %%     XML_NS_Element = xmlel() | xmlel_old() | xmlcdata()
 %% @doc Convert an {@link xmlel_old()} to an {@link xmlel()}
@@ -3306,12 +3300,12 @@ new_auto_prefix2(Prefixed_NS, Seq) ->
 %%
 %% Other tuples are ignored.
 
--spec(xmlelement_to_xmlel/1 :: (xmlel_old()) -> xmlel()).
+-spec xmlelement_to_xmlel(xmlel_old()) -> xmlel().
 
 xmlelement_to_xmlel(XML_Element) ->
     xmlelement_to_xmlel(XML_Element, [], []).
 
-%% @spec (XML_Element, Default_NS, Prefixed_NS) -> XML_NS_Element
+%% -spec (XML_Element, Default_NS, Prefixed_NS) -> XML_NS_Element
 %%     XML_Element = xmlel_old() | xmlcdata()
 %%     Default_NS = [NS]
 %%     Prefixed_NS = [{NS, Prefix}]
@@ -3326,15 +3320,15 @@ xmlelement_to_xmlel(XML_Element) ->
 %% See {@link xmlel_to_xmlelement/3} for a description of
 %% `Default_NS' and `Prefixed_NS'.
 
--spec(xmlelement_to_xmlel/3 ::
-      (xmlel_old(), xmldefaultnss(), xmlprefixednss()) -> xmlel()).
+-spec xmlelement_to_xmlel
+      (xmlel_old(), xmldefaultnss(), xmlprefixednss()) -> xmlel().
 
 xmlelement_to_xmlel(XML_El, Default_NS, Prefixed_NS) ->
     {New_XML_El, _, _} = xmlelement_to_xmlel_and_nss_tables(XML_El, Default_NS,
 							    Prefixed_NS),
     New_XML_El.
 
-%% @spec (XML_Element, Default_NS, Prefixed_NS) -> {XML_NS_Element, New_Default_NS, New_Prefixed_NS}
+%% -spec (XML_Element, Default_NS, Prefixed_NS) -> {XML_NS_Element, New_Default_NS, New_Prefixed_NS}
 %%     XML_Element = xmlel_old() | xmlcdata()
 %%     Default_NS = [NS]
 %%     Prefixed_NS = [{NS, Prefix}]
@@ -3355,9 +3349,9 @@ xmlelement_to_xmlel(XML_El, Default_NS, Prefixed_NS) ->
 %% `New_Default_NS' and `New_Prefixed_NS' which can be used for future
 %% calls.
 
--spec(xmlelement_to_xmlel_and_nss_tables/3 ::
+-spec xmlelement_to_xmlel_and_nss_tables
       (xmlel_old(), xmldefaultnss(), xmlprefixednss()) ->
-	     {xmlel(), xmldefaultnss(), xmlprefixednss()}).
+	     {xmlel(), xmldefaultnss(), xmlprefixednss()}.
 
 xmlelement_to_xmlel_and_nss_tables(
   #xmlelement{name = Name, attrs = Attrs, children = Children},
@@ -3548,7 +3542,7 @@ search_prefix_in_prefixed_ns(Prefix, Prefixed_NS) ->
             end
     end.
 
-%% @spec (XML_Element, Default_NS, Prefixed_NS) -> XML_Text
+%% -spec (XML_Element, Default_NS, Prefixed_NS) -> XML_Text
 %%     XML_Element = xmlel() | xmlel_old() | xmlendtag() | xmlcdata() | list()
 %%     Default_NS = [NS | Equivalent_NSs]
 %%     Prefixed_NS = [{NS, Prefix}]
@@ -3563,24 +3557,24 @@ search_prefix_in_prefixed_ns(Prefix, Prefixed_NS) ->
 %% important: declarations are sorted from the most recent one to the
 %% oldest one.
 
--spec(node_to_list/3 ::
-      (xmlel_any() | [xmlel_any()], xmldefaultnss(), xmlprefixednss()) -> string()).
+-spec node_to_list
+      (xmlel_any() | [xmlel_any()], xmldefaultnss(), xmlprefixednss()) -> string().
 
 node_to_list(El, Default_NS, Prefixed_NS) ->
     Binary = node_to_binary(El, Default_NS, Prefixed_NS),
     binary_to_list(Binary).
 
-%% @spec (XML_Element) -> XML_Text
+%% -spec (XML_Element) -> XML_Text
 %%     XML_Element = xmlel() | xmlel_old() | list()
 %%     XML_Text = string()
 %% @doc Serialize an XML document to text.
 
--spec(document_to_list/1 :: (xmlel_any()) -> string()).
+-spec document_to_list(xmlel_any()) -> string().
 
 document_to_list(El) ->
     node_to_list(El, [], []).
 
-%% @spec (El, Default_NS, Prefixed_NS) -> XML_Text
+%% -spec (El, Default_NS, Prefixed_NS) -> XML_Text
 %%     XML_Element = xmlel() | xmlel_old() | xmlendtag() | xmlcdata() | list()
 %%     Default_NS = [NS | Equivalent_NSs]
 %%     Prefixed_NS = [{NS, Prefix}]
@@ -3593,14 +3587,14 @@ document_to_list(El) ->
 %% Converting to binary is about 15% to 20% faster than converting to a
 %% list.
 
--spec(node_to_binary/3 ::
-      (xmlel_any() | [xmlel_any()]| #xmlendtag{}, xmldefaultnss(), xmlprefixednss()) -> binary()).
+-spec node_to_binary
+      (xmlel_any() | [xmlel_any()]| #xmlendtag{}, xmldefaultnss(), xmlprefixednss()) -> binary().
 
 node_to_binary(El, Default_NS, Prefixed_NS) ->
     IO_List = node_to_iolist(El, Default_NS, Prefixed_NS),
     iolist_to_binary(IO_List).
 
-%% @spec (XML_Element) -> XML_Text
+%% -spec (XML_Element) -> XML_Text
 %%     XML_Element = xmlel() | xmlel_old() | list()
 %%     XML_Text = binary()
 %% @doc Serialize an XML document to text.
@@ -3608,12 +3602,12 @@ node_to_binary(El, Default_NS, Prefixed_NS) ->
 %% Converting to binary is about 15% to 20% faster than converting to a
 %% list.
 
--spec(document_to_binary/1 :: (xmlel_any()) -> binary()).
+-spec document_to_binary(xmlel_any()) -> binary().
 
 document_to_binary(El) ->
     node_to_binary(El, [], []).
 
-%% @spec (XML_Element, Default_NS, Prefixed_NS) -> XML_Text
+%% -spec (XML_Element, Default_NS, Prefixed_NS) -> XML_Text
 %%     XML_Element = xmlel() | xmlel_old() | xmlendtag() | xmlcdata() | list()
 %%     Default_NS = [NS | Equivalent_NSs]
 %%     Prefixed_NS = [{NS, Prefix}]
@@ -3629,8 +3623,8 @@ document_to_binary(El) ->
 %% TODO: transform directly to text without converting it to the old
 %%       xmlelement() first.
 
--spec(node_to_iolist/3 ::
-      (xmlel_any() | [xmlel_any()]| #xmlendtag{}, xmldefaultnss(), xmlprefixednss()) -> iolist()).
+-spec node_to_iolist
+      (xmlel_any() | [xmlel_any()]| #xmlendtag{}, xmldefaultnss(), xmlprefixednss()) -> iolist().
 
 node_to_iolist(El, Default_NS, Prefixed_NS) when is_list(El) ->
     Els = normalize_cdata_in_list(El),
@@ -3692,24 +3686,24 @@ attrs_to_iolist(Attrs) ->
 attr_to_iolist({Name, Value}) ->
     [$\s, Name, $=, $", escape_attr_using_entities(Value), $"].
 
-%% @spec (XML_Element) -> XML_Text
+%% -spec (XML_Element) -> XML_Text
 %%     XML_Element = xmlel() | xmlel_old() | list()
 %%     XML_Text = iolist()
 %% @doc Serialize an XML document to text.
 
--spec(document_to_iolist/1 :: (xmlel_any()) -> iolist()).
+-spec document_to_iolist(xmlel_any()) -> iolist().
 
 document_to_iolist(El) ->
     node_to_iolist(El, [], []).
 
-%% @spec (XML_Element) -> New_XML_Element
+%% -spec (XML_Element) -> New_XML_Element
 %%     XML_Element = xmlel() | xmlel_old()
 %%     New_XML_Element = xmlel() | xmlel_old()
 %% @doc Recursively remove text nodes containing only whitespaces.
 %%
 %% @see is_whitespace/1.
 
--spec(deindent_document/1 :: (xmlel_any()) -> xmlel_any()).
+-spec deindent_document(xmlel_any()) -> xmlel_any().
 
 deindent_document(#xmlel{children = Children} = El) ->
     New_Children = deindent_children(remove_whitespaces_from_list(Children)),
@@ -3733,7 +3727,7 @@ deindent_children2([Child | Rest], Result)
     New_Child = deindent_document(Child),
     deindent_children2(Rest, [New_Child | Result]).
 
-%% @spec (XML_Element, Indent) -> New_XML_Element
+%% -spec (XML_Element, Indent) -> New_XML_Element
 %%     XML_Element = xmlel() | xmlel_old()
 %%     Indent = binary()
 %%     New_XML_Element = xmlel() | xmlel_old()
@@ -3741,12 +3735,12 @@ deindent_children2([Child | Rest], Result)
 %%
 %% Indentation of {@link xmlendtag()} isn't supported yet.
 
--spec(indent_document/2 :: (xmlel_any(), binary()) -> xmlel_any()).
+-spec indent_document(xmlel_any(), binary()) -> xmlel_any().
 
 indent_document(El, Indent) ->
     indent_document(El, Indent, <<>>).
 
-%% @spec (XML_Element, Indent, Previous_Total) -> New_XML_Element
+%% -spec (XML_Element, Indent, Previous_Total) -> New_XML_Element
 %%     XML_Element = xmlel() | xmlel_old()
 %%     Indent = binary()
 %%     Previous_Total = binary()
@@ -3755,7 +3749,7 @@ indent_document(El, Indent) ->
 %%
 %% Indentation of {@link xmlendtag()} isn't supported yet.
 
--spec(indent_document/3 :: (xmlel_any(), binary(), binary()) -> xmlel_any()).
+-spec indent_document(xmlel_any(), binary(), binary()) -> xmlel_any().
 
 indent_document(El, Indent, Previous_Total) ->
     %% First, we remove previous indentation.
@@ -3797,7 +3791,7 @@ indent_children2([Child | Rest], Indent, Previous_Total, Before, End, Result)
     New_Result = [New_Child, Before | Result],
     indent_children2(Rest, Indent, Previous_Total, Before, End, New_Result).
 
-%% @spec (XML_Elements) -> Cleaned_XML_Elements
+%% -spec (XML_Elements) -> Cleaned_XML_Elements
 %%     XML_Elements = [xmlel() | xmlel_old() | xmlcdata() |
 %%         xmlendtag()]
 %%     Cleaned_XML_Elements = [xmlel() | xmlel_old() | xmlcdata()]
@@ -3809,7 +3803,7 @@ indent_children2([Child | Rest], Indent, Previous_Total, Before, End, Result)
 %% option (see {@link xmlparseroption()}) wasn't specified at {@link
 %% start_parser/1} time.
 
--spec(clear_endtag_tuples/1 :: ([xmlnode() | xmlendtag()]) -> [xmlnode()]).
+-spec clear_endtag_tuples([xmlnode() | xmlendtag()]) -> [xmlnode()].
 
 clear_endtag_tuples(XML_Elements) ->
     clear_endtag_tuples2(XML_Elements, []).
@@ -3821,7 +3815,7 @@ clear_endtag_tuples2([XML_Element | Rest], Result) ->
 clear_endtag_tuples2([], Result) ->
     lists:reverse(Result).
 
-%% @spec (CData) -> Escaped_CData
+%% -spec (CData) -> Escaped_CData
 %%     CData = string() | binary()
 %%     Escaped_CData = string() | binary()
 %% @doc Replace sensible characters with entities.
@@ -3829,7 +3823,7 @@ clear_endtag_tuples2([], Result) ->
 %% Processed characters are <tt>&amp;</tt>, <tt>&lt;</tt>,
 %% <tt>&gt;</tt>, <tt>&quot;</tt>, <tt>&apos;</tt>.
 
--spec(escape_using_entities/1 :: (binary() | string()) -> binary() | string()).
+-spec escape_using_entities(binary() | string()) -> binary() | string().
 
 escape_using_entities(CData) when is_list(CData) ->
     lists:flatten([case C of
@@ -3859,7 +3853,7 @@ escape_using_entities2(<<>>, New_CData) ->
 
 
 
--spec(escape_attr_using_entities/1 :: (binary() | string()) -> binary() | string()).
+-spec escape_attr_using_entities(binary() | string()) -> binary() | string().
 
 escape_attr_using_entities(CData) when is_list(CData) ->
     lists:flatten([case C of
@@ -3894,12 +3888,12 @@ escape_attr_using_entities2(<<>>, New_CData) ->
     list_to_binary(lists:reverse(New_CData)).
 
 
-%% @spec (CData) -> Escaped_CData
+%% -spec (CData) -> Escaped_CData
 %%     CData = string() | binary()
 %%     Escaped_CData = string() | binary()
 %% @doc Escape text using CDATA sections.
 
--spec(escape_using_cdata/1 :: (binary() | string()) -> binary() | string()).
+-spec escape_using_cdata(binary() | string()) -> binary() | string().
 
 escape_using_cdata(CData) when is_list(CData) ->
     escape_using_cdata_list(CData, false, []);
@@ -3981,11 +3975,11 @@ escape_using_cdata_binary2(CData, Current_Pos, [Pos | End_Token_Pos],
     escape_using_cdata_binary2(CData2, Pos + 1, End_Token_Pos,
 			       [<<"]]>">>, CData1, <<"<![CDATA[">> | Escaped]).
 
-%% @spec () -> escape_using_entities | escape_using_cdata
+%% -spec () -> escape_using_entities | escape_using_cdata
 %% @doc Tell what escaping function will be used internally.
 
--spec(internal_escaping_function_name/0 ::
-      () -> escape_using_cdata | escape_using_entities).
+-spec internal_escaping_function_name
+      () -> escape_using_cdata | escape_using_entities.
 
 -ifdef(ESCAPE_USING_CDATA_SECTIONS).
 internal_escaping_function_name() ->

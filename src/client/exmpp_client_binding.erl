@@ -37,7 +37,7 @@
 %% Feature announcement.
 %% --------------------------------------------------------------------
 
-%% @spec (Features_Announcement) -> bool()
+%% -spec (Features_Announcement) -> boolean()
 %%     Features_Announcement = exmpp_xml:xmlel()
 %% @throws {resource_binding, announced_support, invalid_feature, Feature}
 %% @doc Tell if the Resource Binding feature is supported.
@@ -57,14 +57,14 @@ announced_support2(Feature) ->
 %% Resource binding.
 %% --------------------------------------------------------------------
 
-%% @spec () -> Bind
+%% -spec () -> Bind
 %%     Bind = exmpp_xml:xmlel()
 %% @doc Prepare a Resource Binding request.
 
 bind() ->
     bind(undefined).
 
-%% @spec (Resource) -> Bind
+%% -spec (Resource) -> Bind
 %%     Bind = exmpp_xml:xmlel()
 %% @doc Prepare a Resource Binding request for the given `Resource'.
 
@@ -88,7 +88,7 @@ bind(Resource) ->
      },
     exmpp_iq:set(?NS_JABBER_CLIENT, Bind, exmpp_utils:random_id("bind")).
 
-%% @spec (Bind) -> Jid
+%% -spec (Bind) -> Jid
 %%     Bind = exmpp_xml:xmlel()
 %%     Jid = exmpp_jid:jid()
 %% @throws {resource_binding, bounded_jid, invalid_bind, Stanza} |

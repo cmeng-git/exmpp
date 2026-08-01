@@ -30,7 +30,7 @@
 %% Creating stanza.
 %% --------------------------------------------------------------------
 
-%% @spec (Push_IQ) -> Ack_IQ
+%% -spec (Push_IQ) -> Ack_IQ
 %%     Push_IQ = exmpp_xml:xmlel()
 %%     Ack_IQ = exmpp_xml:xmlel()
 %% @doc Make an `<iq/>' result to acknowledge the push.

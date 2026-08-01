@@ -38,7 +38,7 @@
 %% Feature announcement.
 %% --------------------------------------------------------------------
 
-%% @spec (Features_Announcement) -> Methods
+%% -spec (Features_Announcement) -> Methods
 %%     Features_Announcement = exmpp_xml:xmlel()
 %%     Methods = [string()]
 %% @throws {stream_compression, announced_methods, invalid_feature, Feature} |
@@ -73,7 +73,7 @@ announced_methods3([], Result) ->
 %% Compression negotiation.
 %% --------------------------------------------------------------------
 
-%% @spec (Method) -> Compress
+%% -spec (Method) -> Compress
 %%     Method = string()
 %%     Compress = exmpp_xml:xmlel()
 %% @doc Prepare an request to select prefered compression method.

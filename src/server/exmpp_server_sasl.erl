@@ -46,7 +46,7 @@
 %% Feature announcement.
 %% --------------------------------------------------------------------
 
-%% @spec (Mechanisms) -> Feature
+%% -spec (Mechanisms) -> Feature
 %%     Mechanisms = [binary() | string()]
 %%     Feature = exmpp_xml:xmlel()
 %% @throws {sasl, feature_announcement, invalid_mechanisms_list, []} |
@@ -103,7 +103,7 @@ standard_conditions() ->
      {'undefined-condition'}
     ].
 
-%% @spec (Challenge) -> Challenge_El
+%% -spec (Challenge) -> Challenge_El
 %%     Challenge = string() | none
 %%     Challenge_El = exmpp_xml:xmlel()
 %% @doc Prepare a `<challenge/>' element with the given challenge.
@@ -120,14 +120,14 @@ challenge(Challenge) ->
 	       },
     exmpp_xml:set_cdata(El, base64:encode_to_string(Challenge)).
 
-%% @spec () -> Success_El
+%% -spec () -> Success_El
 %%     Success_El = exmpp_xml:xmlel()
 %% @doc Prepare a `<success/>' element.
 
 success() ->
     success(none).
 
-%% @spec (Data) -> Success_El
+%% -spec (Data) -> Success_El
 %%     Data = string() | none
 %%     Success_El = exmpp_xml:xmlel()
 %% @doc Prepare a `<success/>' element with supplied XML character data.
@@ -143,7 +143,7 @@ success(Data) ->
 	       },
     exmpp_xml:set_cdata(El, base64:encode_to_string(Data)).
 
-%% @spec () -> Failure
+%% -spec () -> Failure
 %%     Failure = exmpp_xml:xmlel()
 %% @doc Prepare a `<failure/>' element.
 
@@ -152,7 +152,7 @@ failure() ->
 	   name = 'failure'
 	  }.
 
-%% @spec (Condition) -> Failure
+%% -spec (Condition) -> Failure
 %%     Condition = atom()
 %%     Failure = exmpp_xml:xmlel()
 %% @doc Prepare a `<failure/>' element with a defined condition.
@@ -167,7 +167,7 @@ failure(Condition) ->
 			 },
     exmpp_xml:append_child(failure(), Condition_El).
 
-%% @spec (Condition, Text) -> Failure
+%% -spec (Condition, Text) -> Failure
 %%     Condition = atom()
 %%     Text = string()
 %%     Failure = exmpp_xml:xmlel()
@@ -189,7 +189,7 @@ failure(Condition, Text) ->
 			 },
     exmpp_xml:append_children(failure(), [Condition_El, Text_El]).
 
-%% @spec (El) -> Type
+%% -spec (El) -> Type
 %%     El = exmpp_xml:xmlel()
 %%     Type = Auth | Response | Abort
 %%     Auth = {auth, Mechanism, none | string()}

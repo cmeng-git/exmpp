@@ -10,7 +10,7 @@ dnl   OPENSSL_LIBS
 AC_DEFUN([EXMPP_OPENSSL],
 [
   AC_ARG_WITH(openssl,
-    AC_HELP_STRING([--with-openssl=PREFIX],
+    AS_HELP_STRING([--with-openssl=PREFIX],
       [prefix where OpenSSL is installed (optional)]),
     openssl_prefix="$withval",)
 

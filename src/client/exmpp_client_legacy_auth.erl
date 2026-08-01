@@ -138,7 +138,7 @@
 %% Creating stanza.
 %% --------------------------------------------------------------------
 
-%% @spec (To) -> Request_IQ
+%% -spec (To) -> Request_IQ
 %%     To = string()
 %%     Request_IQ = exmpp_xml:xmlel()
 %% @doc Make an `<iq>' for requesting legacy authentication.
@@ -148,7 +148,7 @@
 request(To) ->
     request(To, auth_id()).
 
-%% @spec (To, ID) -> Request_IQ
+%% -spec (To, ID) -> Request_IQ
 %%     To = string()
 %%     ID = string()
 %%     Request_IQ = exmpp_xml:xmlel()
@@ -162,7 +162,7 @@ request(To, ID) ->
     IQ = exmpp_iq:get(?NS_JABBER_CLIENT, Query, ID),
     exmpp_stanza:set_recipient(IQ, To).
 
-%% @spec (To, Username) -> Request_IQ
+%% -spec (To, Username) -> Request_IQ
 %%     To = string()
 %%     Username = string()
 %%     Request_IQ = exmpp_xml:xmlel()
@@ -173,7 +173,7 @@ request(To, ID) ->
 request_with_user(To, Username) ->
     request_with_user(To, Username, auth_id()).
 
-%% @spec (To, Username, ID) -> Request_IQ
+%% -spec (To, Username, ID) -> Request_IQ
 %%     To = string()
 %%     Username = string()
 %%     ID = string()
@@ -192,7 +192,7 @@ request_with_user(To, Username, ID) ->
     IQ = exmpp_iq:get(?NS_JABBER_CLIENT, Query, ID),
     exmpp_stanza:set_recipient(IQ, To).
 
-%% @spec (Fields_IQ, Username, Password, Resource) -> Password_IQ
+%% -spec (Fields_IQ, Username, Password, Resource) -> Password_IQ
 %%     Fields_IQ = exmpp_xml:xmlel()
 %%     Username = string()
 %%     Password = string() | nil()
@@ -205,7 +205,7 @@ request_with_user(To, Username, ID) ->
 password(Fields_IQ, Username, Password, Resource) ->
     password(Fields_IQ, Username, Password, Resource, auth_id()).
 
-%% @spec (Fields_IQ, Username, Password, Resource, ID) -> Password_IQ
+%% -spec (Fields_IQ, Username, Password, Resource, ID) -> Password_IQ
 %%     Fields_IQ = exmpp_xml:xmlel()
 %%     Username = string()
 %%     Password = string() | nil()
@@ -220,7 +220,7 @@ password(Fields_IQ, Username, Password, Resource, ID) ->
         digest -> password_digest(Username, Password, Resource, ID)
     end.
 
-%% @spec (Username, Password, Resource) -> Password_IQ
+%% -spec (Username, Password, Resource) -> Password_IQ
 %%     Username = string()
 %%     Password = string() | nil()
 %%     Resource = string()
@@ -232,7 +232,7 @@ password(Fields_IQ, Username, Password, Resource, ID) ->
 password_plain(Username, Password, Resource) ->
     password_plain(Username, Password, Resource, auth_id()).
 
-%% @spec (Username, Password, Resource, ID) -> Password_IQ
+%% -spec (Username, Password, Resource, ID) -> Password_IQ
 %%     Username = string()
 %%     Password = string() | nil()
 %%     Resource = string()
@@ -261,7 +261,7 @@ password_plain(Username, Password, Resource, ID) ->
      },
     exmpp_iq:set(?NS_JABBER_CLIENT, Query, ID).
 
-%% @spec (Username, Password, Resource) -> Password_IQ
+%% -spec (Username, Password, Resource) -> Password_IQ
 %%     Username = string()
 %%     Password = string()
 %%     Resource = string()
@@ -273,7 +273,7 @@ password_plain(Username, Password, Resource, ID) ->
 password_digest(Username, Password, Resource) ->
     password_digest(Username, Password, Resource, auth_id()).
 
-%% @spec (Username, Password, Resource, ID) -> Password_IQ
+%% -spec (Username, Password, Resource, ID) -> Password_IQ
 %%     Username = string()
 %%     Password = string()
 %%     Resource = string()
@@ -304,7 +304,7 @@ password_digest(Username, Password, Resource, ID) ->
 %% Accessing informations.
 %% --------------------------------------------------------------------
 
-%% @spec (Fields_IQ) -> Fields
+%% -spec (Fields_IQ) -> Fields
 %%     Fields_IQ = exmpp_xml:xmlel()
 %%     Fields = [atom()]
 %% @throws {legacy_auth, get_fields, invalid_iq, Fields_IQ} |
@@ -330,7 +330,7 @@ get_fields2([Field | _Rest], _Fields) ->
 get_fields2([], Fields) ->
     lists:reverse(Fields).
 
-%% @spec (Fields_IQ) -> Auth
+%% -spec (Fields_IQ) -> Auth
 %%     Fields_IQ = exmpp_xml:xmlel()
 %%     Auth = digest | password
 %% @doc Return the prefered authentication method.
@@ -341,7 +341,7 @@ get_prefered_auth(IQ) when ?IS_IQ(IQ) ->
         _    -> plain
     end.
 
-%% @spec (IQ) -> bool()
+%% -spec (IQ) -> boolean()
 %%     IQ = exmpp_xml:xmlel()
 %% @doc Tell if the authentication succeeded.
 
@@ -356,7 +356,7 @@ is_success(IQ) when ?IS_IQ(IQ) ->
 %% Tools.
 %% --------------------------------------------------------------------
 
-%% @spec (ID, Passwd) -> Digest
+%% -spec (ID, Passwd) -> Digest
 %%     ID = string()
 %%     Passwd = string()
 %%     Digest = string()
@@ -365,9 +365,9 @@ is_success(IQ) when ?IS_IQ(IQ) ->
 digest(ID, Passwd) ->
     Token = ID ++ Passwd,
     crypto:start(),
-    binary_to_list(crypto:sha(Token)).
+    binary_to_list(crypto:hash(sha, Token)).
 
-%% @spec (Plain) -> Hex
+%% -spec (Plain) -> Hex
 %%     Plain = string()
 %%     Hex = string()
 %% @doc Encode list to a hexadecimal string.
@@ -392,7 +392,7 @@ int_to_hexchar(I)  -> $0 + I.
 %% Internal functions.
 %% --------------------------------------------------------------------
 
-%% @spec () -> Auth_ID
+%% -spec () -> Auth_ID
 %%     Auth_ID = string()
 %% @doc Generate a random authentication iq ID.
 %%

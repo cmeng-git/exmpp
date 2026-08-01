@@ -40,7 +40,7 @@
 %% Feature announcement.
 %% --------------------------------------------------------------------
 
-%% @spec (Features_Announcement) -> Support
+%% -spec (Features_Announcement) -> Support
 %%     Features_Announcement = exmpp_xml:xmlel()
 %%     Support = none | optional | required
 %% @throws {tls, announced_support, invalid_announcement, El}
@@ -66,7 +66,7 @@ announced_support2(#xmlel{ns = ?NS_TLS, name = 'starttls'} = El) ->
 %% TLS negotiation.
 %% --------------------------------------------------------------------
 
-%% @spec () -> STARTTLS
+%% -spec () -> STARTTLS
 %%     STARTTLS = exmpp_xml:xmlel()
 %% @doc Make an XML element to tell the receiving entity that we want to
 %% use TLS.

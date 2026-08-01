@@ -138,12 +138,12 @@ receiver_loop(ClientPid, ESocket, StreamRef) ->
 	    {ok, NewStreamRef} = exmpp_xmlstream:parse(StreamRef, Str),
 	    receiver_loop(ClientPid, ESocket, NewStreamRef);
 	{tcp_closed, Socket} ->
-	    gen_fsm:send_all_state_event(ClientPid, tcp_closed);
+	    gen_statem:cast(ClientPid, tcp_closed);
 	{ssl_closed, Socket} ->
-	    gen_fsm:send_all_state_event(ClientPid, tcp_closed);
+	    gen_statem:cast(ClientPid, tcp_closed);
 	{ssl_error,Socket,Reason} ->
 	    error_logger:warning_msg([ssl_error,{ssl_socket,Socket},Reason]),
-	    gen_fsm:send_all_state_event(ClientPid, tcp_closed);
+	    gen_fsgen_statem:cast(ClientPid, tcp_closed);
         reset_parser ->
             receiver_loop(ClientPid, ESocket, exmpp_xmlstream:reset(StreamRef))
     end.

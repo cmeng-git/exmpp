@@ -78,7 +78,7 @@
 %% Publish/subscribe containers.
 %% --------------------------------------------------------------------
 
-%% @spec (Service) -> Pubsub_Iq
+%% -spec (Service) -> Pubsub_Iq
 %%     Service = string()
 %%     Pubsub_Iq = exmpp_xml:xmlel()
 %% @doc Make an `<iq>' for retrieving user subscriptions.
@@ -88,7 +88,7 @@
 get_subscriptions(Service) ->
     get_subscriptions(pubsub_id(), Service).
 
-%% @spec (Id, Service) -> Pubsub_Iq
+%% -spec (Id, Service) -> Pubsub_Iq
 %%     Id = string()
 %%     Service = string()
 %%     Pubsub_Iq = exmpp_xml:xmlel()
@@ -100,7 +100,7 @@ get_subscriptions(Id, Service) ->
     Iq = ?IQ_GET(Service, Id),
     exmpp_xml:append_child(Iq, Pubsub).
 
-%% @spec (Service) -> Pubsub_Iq
+%% -spec (Service) -> Pubsub_Iq
 %%     Service = string()
 %%     Pubsub_Iq = exmpp_xml:xmlel()
 %% @doc Make an `<iq>' for retrieving user affiliations.
@@ -110,7 +110,7 @@ get_subscriptions(Id, Service) ->
 get_affiliations(Service) ->
     get_affiliations(pubsub_id(), Service).
 
-%% @spec (Id, Service) -> Pubsub_Iq
+%% -spec (Id, Service) -> Pubsub_Iq
 %%     Id = string()
 %%     Service = string()
 %%     Pubsub_Iq = exmpp_xml:xmlel()
@@ -122,7 +122,7 @@ get_affiliations(Id, Service) ->
     Iq = ?IQ_GET(Service, Id),
     exmpp_xml:append_child(Iq, Pubsub).
 
-%% @spec (Service, Node) -> Pubsub_Iq
+%% -spec (Service, Node) -> Pubsub_Iq
 %%     Service = string()
 %%     Node = string()
 %%     Pubsub_Iq = exmpp_xml:xmlel()
@@ -133,7 +133,7 @@ get_affiliations(Id, Service) ->
 create_node(Service, Node) ->
     create_node(pubsub_id(), Service, Node).
 
-%% @spec (Id, Service, Node) -> Pubsub_Iq
+%% -spec (Id, Service, Node) -> Pubsub_Iq
 %%     Id = string()
 %%     Service = string()
 %%     Node = string()
@@ -150,7 +150,7 @@ create_node(Id, Service, Node) ->
     Iq = ?IQ_SET(Service, Id),
     exmpp_xml:append_child(Iq, Pubsub).
 
-%% @spec (Service) -> Pubsub_Iq
+%% -spec (Service) -> Pubsub_Iq
 %%     Service = string()
 %%     Pubsub_Iq = exmpp_xml:xmlel()
 %% @doc Make an `<iq>' for creating an instant node on a pubsub service.
@@ -160,7 +160,7 @@ create_node(Id, Service, Node) ->
 create_instant_node(Service) ->
     create_instant_node(pubsub_id(), Service).
 
-%% @spec (Id, Service) -> Pubsub_Iq
+%% -spec (Id, Service) -> Pubsub_Iq
 %%     Id = string()
 %%     Service = string()
 %%     Pubsub_Iq = exmpp_xml:xmlel()
@@ -172,7 +172,7 @@ create_instant_node(Id, Service) ->
     Iq = ?IQ_SET(Service, Id),
     exmpp_xml:append_child(Iq, Pubsub).
 
-%% @spec (Service, Node, Options) -> Pubsub_Iq
+%% -spec (Service, Node, Options) -> Pubsub_Iq
 %%     Service = string()
 %%     Node = string()
 %%     Options = exmpp_xml:xmlel()
@@ -184,7 +184,7 @@ create_instant_node(Id, Service) ->
 create_and_configure_node(Service, Node, Options) ->
     create_and_configure_node(pubsub_id(), Service, Node, Options).
 
-%% @spec (Id, Service, Node, Options) -> Pubsub_Iq
+%% -spec (Id, Service, Node, Options) -> Pubsub_Iq
 %%     Id = string()
 %%     Service = string()
 %%     Node = string()
@@ -205,7 +205,7 @@ create_and_configure_node(Id, Service, Node, Options) ->
     Iq = ?IQ_SET(Service, Id),
     exmpp_xml:append_child(Iq, Pubsub).
 
-%% @spec (Service, Node) -> Pubsub_Iq
+%% -spec (Service, Node) -> Pubsub_Iq
 %%     Service = string()
 %%     Node = string()
 %%     Pubsub_Iq = exmpp_xml:xmlel()
@@ -216,7 +216,7 @@ create_and_configure_node(Id, Service, Node, Options) ->
 delete_node(Service, Node) ->
     delete_node(pubsub_id(), Service, Node).
 
-%% @spec (Id, Service, Node) -> Pubsub_Iq
+%% -spec (Id, Service, Node) -> Pubsub_Iq
 %%     Id = string()
 %%     Service = string()
 %%     Node = string()
@@ -233,7 +233,7 @@ delete_node(Id, Service, Node) ->
     Iq = ?IQ_SET(Service, Id),
     exmpp_xml:append_child(Iq, Pubsub).
 
-%% @spec (From, Service, Node) -> Pubsub_Iq
+%% -spec (From, Service, Node) -> Pubsub_Iq
 %%     From = string()
 %%     Service = string()
 %%     Node = string()
@@ -245,7 +245,7 @@ delete_node(Id, Service, Node) ->
 subscribe(From, Service, Node) ->
     subscribe(pubsub_id(), From, Service, Node).
 
-%% @spec (Id, From, Service, Node) -> Pubsub_Iq
+%% -spec (Id, From, Service, Node) -> Pubsub_Iq
 %%     Id = string()
 %%     From = string()
 %%     Service = string()
@@ -264,7 +264,7 @@ subscribe(Id, From, Service, Node) ->
     Iq = ?IQ_SET(Service, Id),
     exmpp_xml:append_child(Iq, Pubsub).
 
-%% @spec (From, Service, Node) -> Pubsub_Iq
+%% -spec (From, Service, Node) -> Pubsub_Iq
 %%     From = string()
 %%     Service = string()
 %%     Node = string()
@@ -276,7 +276,7 @@ subscribe(Id, From, Service, Node) ->
 unsubscribe(From, Service, Node) ->
     unsubscribe(pubsub_id(), From, Service, Node).
 
-%% @spec (Id, From, Service, Node) -> Pubsub_Iq
+%% -spec (Id, From, Service, Node) -> Pubsub_Iq
 %%     Id = string()
 %%     From = string()
 %%     Service = string()
@@ -295,7 +295,7 @@ unsubscribe(Id, From, Service, Node) ->
     Iq = ?IQ_SET(Service, Id),
     exmpp_xml:append_child(Iq, Pubsub).
 
-%% @spec (From, Service, Node) -> Pubsub_Iq
+%% -spec (From, Service, Node) -> Pubsub_Iq
 %%     From = string()
 %%     Service = string()
 %%     Node = string()
@@ -307,7 +307,7 @@ unsubscribe(Id, From, Service, Node) ->
 get_subscriptions_options(From, Service, Node) ->
     get_subscriptions_options(pubsub_id(), From, Service, Node).
 
-%% @spec (Id, From, Service, Node) -> Pubsub_Iq
+%% -spec (Id, From, Service, Node) -> Pubsub_Iq
 %%     Id = string()
 %%     From = string()
 %%     Service = string()
@@ -324,7 +324,7 @@ get_subscriptions_options(Id, From, Service, Node) ->
     Iq = ?IQ_GET(Service, Id),
     exmpp_xml:append_child(Iq, Pubsub).
 
-%% @spec (From, Service, Node, DataForm) -> Pubsub_Iq
+%% -spec (From, Service, Node, DataForm) -> Pubsub_Iq
 %%     From = string()
 %%     Service = string()
 %%     Node = string()
@@ -337,7 +337,7 @@ get_subscriptions_options(Id, From, Service, Node) ->
 set_subscriptions_options(From, Service, Node, DataForm) ->
     set_subscriptions_options(pubsub_id(), From, Service, Node, DataForm).
 
-%% @spec (Id, From, Service, Node, DataForm) -> Pubsub_Iq
+%% -spec (Id, From, Service, Node, DataForm) -> Pubsub_Iq
 %%     Id = string()
 %%     From = string()
 %%     Service = string()
@@ -356,7 +356,7 @@ set_subscriptions_options(Id, From, Service, Node, DataForm) ->
     Iq = ?IQ_SET(Service, Id),
     exmpp_xml:append_child(Iq, Pubsub).
 
-%% @spec (From, Service, Node, DataForm) -> Pubsub_Iq
+%% -spec (From, Service, Node, DataForm) -> Pubsub_Iq
 %%     From = string()
 %%     Service = string()
 %%     Node = string()
@@ -369,7 +369,7 @@ set_subscriptions_options(Id, From, Service, Node, DataForm) ->
 subscribe_and_configure(From, Service, Node, DataForm) ->
     subscribe_and_configure(pubsub_id(), From, Service, Node, DataForm).
 
-%% @spec (Id, From, Service, Node, DataForm) -> Pubsub_Iq
+%% -spec (Id, From, Service, Node, DataForm) -> Pubsub_Iq
 %%     Id = string()
 %%     From = string()
 %%     Service = string()
@@ -389,7 +389,7 @@ subscribe_and_configure(Id, From, Service, Node, DataForm) ->
     Iq = ?IQ_SET(Service, Id),
     exmpp_xml:append_child(Iq, Pubsub).
 
-%% @spec (Service, Node) -> Pubsub_Iq
+%% -spec (Service, Node) -> Pubsub_Iq
 %%     Service = string()
 %%     Node = string()
 %%     Pubsub_Iq = exmpp_xml:xmlel()
@@ -400,7 +400,7 @@ subscribe_and_configure(Id, From, Service, Node, DataForm) ->
 get_node_configuration(Service, Node) ->
     get_node_configuration(pubsub_id(), Service, Node).
 
-%% @spec (Id, Service, Node) -> Pubsub_Iq
+%% -spec (Id, Service, Node) -> Pubsub_Iq
 %%     Id = string()
 %%     Service = string()
 %%     Node = string()
@@ -415,7 +415,7 @@ get_node_configuration(Id, Service, Node) ->
     Iq = ?IQ_GET(Service, Id),
     exmpp_xml:append_child(Iq, Pubsub).
 
-%% @spec (Service, Node, Options) -> Pubsub_Iq
+%% -spec (Service, Node, Options) -> Pubsub_Iq
 %%     Service = string()
 %%     Node = string()
 %%     Options = exmpp_xml:xmlel()
@@ -427,7 +427,7 @@ get_node_configuration(Id, Service, Node) ->
 set_node_configuration(Service, Node, Options) ->
     set_node_configuration(pubsub_id(), Service, Node, Options).
 
-%% @spec (Id, Service, Node, Options) -> Pubsub_Iq
+%% -spec (Id, Service, Node, Options) -> Pubsub_Iq
 %%     Id = string()
 %%     Service = string()
 %%     Node = string()
@@ -444,7 +444,7 @@ set_node_configuration(Id, Service, Node, Options) ->
     Iq = ?IQ_SET(Service, Id),
     exmpp_xml:append_child(Iq, Pubsub).
 
-%% @spec (Service) -> Pubsub_Iq
+%% -spec (Service) -> Pubsub_Iq
 %%     Service = string()
 %%     Pubsub_Iq = exmpp_xml:xmlel()
 %% @doc Make an `<iq>' for getting default configuration options.
@@ -454,7 +454,7 @@ set_node_configuration(Id, Service, Node, Options) ->
 get_default_configuration(Service) ->
     get_default_configuration(pubsub_id(), Service).
 
-%% @spec (Id, Service) -> Pubsub_Iq
+%% -spec (Id, Service) -> Pubsub_Iq
 %%     Id = string()
 %%     Service = string()
 %%     Pubsub_Iq = exmpp_xml:xmlel()
@@ -466,7 +466,7 @@ get_default_configuration(Id, Service) ->
     Iq = ?IQ_GET(Service, Id),
     exmpp_xml:append_child(Iq, Pubsub).
 
-%% @spec (Service, Node) -> Pubsub_Iq
+%% -spec (Service, Node) -> Pubsub_Iq
 %%     Service = string()
 %%     Node = string()
 %%     Pubsub_Iq = exmpp_xml:xmlel()
@@ -477,7 +477,7 @@ get_default_configuration(Id, Service) ->
 purge_items(Service, Node) ->
     purge_items(pubsub_id(), Service, Node).
 
-%% @spec (Id, Service, Node) -> Pubsub_Iq
+%% -spec (Id, Service, Node) -> Pubsub_Iq
 %%     Id = string()
 %%     Service = string()
 %%     Node = string()
@@ -492,7 +492,7 @@ purge_items(Id, Service, Node) ->
     Iq = ?IQ_SET(Service, Id),
     exmpp_xml:append_child(Iq, Pubsub).
 
-%% @spec (Service, Node) -> Pubsub_Iq
+%% -spec (Service, Node) -> Pubsub_Iq
 %%     Service = string()
 %%     Node = string()
 %%     Pubsub_Iq = exmpp_xml:xmlel()
@@ -503,7 +503,7 @@ purge_items(Id, Service, Node) ->
 get_owner_subscriptions(Service, Node) ->
     get_owner_subscriptions(pubsub_id(), Service, Node).
 
-%% @spec (Id, Service, Node) -> Pubsub_Iq
+%% -spec (Id, Service, Node) -> Pubsub_Iq
 %%     Id = string()
 %%     Service = string()
 %%     Node = string()
@@ -518,7 +518,7 @@ get_owner_subscriptions(Id, Service, Node) ->
     Iq = ?IQ_GET(Service, Id),
     exmpp_xml:append_child(Iq, Pubsub).
 
-%% @spec (Service, Node, Subscribers) -> Pubsub_Iq
+%% -spec (Service, Node, Subscribers) -> Pubsub_Iq
 %%     Service = string()
 %%     Node = string()
 %%     Subscribers = [{Jid, State}]
@@ -532,7 +532,7 @@ get_owner_subscriptions(Id, Service, Node) ->
 set_owner_subscriptions(Service, Node, Subscribers) ->
     set_owner_subscriptions(pubsub_id(), Service, Node, Subscribers).
 
-%% @spec (Id, Service, Node, Subscribers) -> Pubsub_Iq
+%% -spec (Id, Service, Node, Subscribers) -> Pubsub_Iq
 %%     Id = string()
 %%     Service = string()
 %%     Node = string()
@@ -558,7 +558,7 @@ set_owner_subscriptions(Id, Service, Node, Subscribers) ->
     Iq = ?IQ_SET(Service, Id),
     exmpp_xml:append_child(Iq, Pubsub).
 
-%% @spec (Service, Node) -> Pubsub_Iq
+%% -spec (Service, Node) -> Pubsub_Iq
 %%     Service = string()
 %%     Node = string()
 %%     Pubsub_Iq = exmpp_xml:xmlel()
@@ -569,7 +569,7 @@ set_owner_subscriptions(Id, Service, Node, Subscribers) ->
 get_owner_affiliations(Service, Node) ->
     get_owner_affiliations(pubsub_id(), Service, Node).
 
-%% @spec (Id, Service, Node) -> Pubsub_Iq
+%% -spec (Id, Service, Node) -> Pubsub_Iq
 %%     Id = string()
 %%     Service = string()
 %%     Node = string()
@@ -585,7 +585,7 @@ get_owner_affiliations(Id, Service, Node) ->
     exmpp_xml:append_child(Iq, Pubsub).
 
 
-%% @spec (Service, Node, Affiliates) -> Pubsub_Iq
+%% -spec (Service, Node, Affiliates) -> Pubsub_Iq
 %%     Service = string()
 %%     Node = string()
 %%     Affiliates = [{Jid, Affiliation}]
@@ -599,7 +599,7 @@ get_owner_affiliations(Id, Service, Node) ->
 set_owner_affiliations(Service, Node, Affiliates) ->
     set_owner_affiliations(pubsub_id(), Service, Node, Affiliates).
 
-%% @spec (Id, Service, Node, Affiliates) -> Pubsub_Iq
+%% -spec (Id, Service, Node, Affiliates) -> Pubsub_Iq
 %%     Service = string()
 %%     Node = string()
 %%     Affiliates = [{Jid, Affiliation}]
@@ -624,7 +624,7 @@ set_owner_affiliations(Id, Service, Node, Affiliates) ->
     Iq = ?IQ_SET(Service, Id),
     exmpp_xml:append_child(Iq, Pubsub).
 
-%% @spec (Service, Node) -> Pubsub_Iq
+%% -spec (Service, Node) -> Pubsub_Iq
 %%     Service = string()
 %%     Node = string()
 %%     Pubsub_Iq = exmpp_xml:xmlel()
@@ -635,7 +635,7 @@ set_owner_affiliations(Id, Service, Node, Affiliates) ->
 get_items(Service, Node) ->
     get_items(pubsub_id(), Service, Node).
 
-%% @spec (Id, Service, Node) -> Pubsub_Iq
+%% -spec (Id, Service, Node) -> Pubsub_Iq
 %%     Id = string()
 %%     Service = string()
 %%     Node = string()
@@ -650,7 +650,7 @@ get_items(Id, Service, Node) ->
     Iq = ?IQ_GET(Service, Id),
     exmpp_xml:append_child(Iq, Pubsub). 
 
-%% @spec (Service, Node, ItemsID) -> Pubsub_Iq
+%% -spec (Service, Node, ItemsID) -> Pubsub_Iq
 %%     Service = string()
 %%     Node = string()
 %%     ItemsID = [ItemID]
@@ -663,7 +663,7 @@ get_items(Id, Service, Node) ->
 get_items_by_id(Service, Node, ItemsID) ->
     get_items_by_id(pubsub_id(), Service, Node, ItemsID).
 
-%% @spec (Id, Service, Node, ItemsID) -> Pubsub_Iq
+%% -spec (Id, Service, Node, ItemsID) -> Pubsub_Iq
 %%     Id = string()
 %%     Service = string()
 %%     Node = string()
@@ -687,7 +687,7 @@ get_items_by_id(Id, Service, Node, ItemsID) ->
     Iq = ?IQ_GET(Service, Id),
     exmpp_xml:append_child(Iq, Pubsub). 
 
-%% @spec (Service, Node, Max) -> Pubsub_Iq
+%% -spec (Service, Node, Max) -> Pubsub_Iq
 %%     Service = string()
 %%     Node = string()
 %%     Max = integer()
@@ -699,7 +699,7 @@ get_items_by_id(Id, Service, Node, ItemsID) ->
 get_items_max(Service, Node, Max) ->
     get_items_max(pubsub_id(), Service, Node, Max).
 
-%% @spec (Id, Service, Node, Max) -> Pubsub_Iq
+%% -spec (Id, Service, Node, Max) -> Pubsub_Iq
 %%     Id = string()
 %%     Service = string()
 %%     Node = string()
@@ -716,7 +716,7 @@ get_items_max(Id, Service, Node, Max) ->
     Iq = ?IQ_GET(Service, Id),
     exmpp_xml:append_child(Iq, Pubsub).
 
-%% @spec (Node, Items) -> Pubsub_Iq
+%% -spec (Node, Items) -> Pubsub_Iq
 %%     Node = string()
 %%     Items = [exmpp_xml:xmlel() | exmpp_xml:xmlcdata()]
 %%     Pubsub_Iq = exmpp_xml:xmlel()
@@ -737,7 +737,7 @@ publish(Node, Item_Children) ->
 	    {<<"type">>, "set"}]),
     exmpp_xml:append_child(Iq, Pubsub). 
 
-%% @spec (Service, Node, Items) -> Pubsub_Iq
+%% -spec (Service, Node, Items) -> Pubsub_Iq
 %%     Service = string()
 %%     Node = string()
 %%     Items = [exmpp_xml:xmlel() | exmpp_xml:xmlcdata()]
@@ -752,7 +752,7 @@ publish(Service, Node, Item_Child) when is_tuple(Item_Child) ->
 publish(Service, Node, Item_Children) ->
     publish(pubsub_id(), Service, Node, Item_Children).
 
-%% @spec (Id, Service, Node, Items) -> Pubsub_Iq
+%% -spec (Id, Service, Node, Items) -> Pubsub_Iq
 %%     Id = string()
 %%     From = string()
 %%     Service = string()
@@ -778,7 +778,7 @@ publish(Id, Service, Node, Item_Children) ->
     Iq = ?IQ_SET(Service, Id),
     exmpp_xml:append_child(Iq, Pubsub).
 
-%% @spec (Service, Node, ItemID) -> Pubsub_Iq
+%% -spec (Service, Node, ItemID) -> Pubsub_Iq
 %%     Service = string()
 %%     Node = string()
 %%     ItemID = string()
@@ -790,7 +790,7 @@ publish(Id, Service, Node, Item_Children) ->
 retract(Service, Node, ItemID) ->
     retract(pubsub_id(), Service, Node, ItemID).
 
-%% @spec (Id, Service, Node, ItemID) -> Pubsub_Iq
+%% -spec (Id, Service, Node, ItemID) -> Pubsub_Iq
 %%     Id = string()
 %%     Service = string()
 %%     Node = string()
@@ -810,13 +810,13 @@ retract(Id, Service, Node, ItemID) ->
     Iq = ?IQ_SET(Service, Id),
     exmpp_xml:append_child(Iq, Pubsub). 
 
-%% @spec () -> Pubsub_ID
+%% -spec () -> Pubsub_ID
 %%     Pubsub_ID = string()
 %% @doc Generate a random pubsub iq ID.
 %%
-%% This function uses {@link random:uniform/1}. It's up to the caller to
+%% This function uses {@link rand:uniform/1}. It's up to the caller to
 %% seed the generator.
 
 pubsub_id() ->
-    "pubsub-" ++ integer_to_list(random:uniform(65536 * 65536)).
+    "pubsub-" ++ integer_to_list(rand:uniform(65536 * 65536)).
 

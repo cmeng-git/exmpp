@@ -25,7 +25,7 @@
 -export([get_roster/0, get_roster/1,
 	 set_item/3, set_item/4]).
 
-%% @spec () -> Roster_Iq
+%% -spec () -> Roster_Iq
 %%     Roster_Iq = exmpp_xml:xmlel()
 %% @doc Make an `<iq>' to retrieve user roster.
 %%
@@ -33,7 +33,7 @@
 get_roster() ->
     get_roster(roster_id()).
 
-%% @spec (Id) -> Roster_Iq
+%% -spec (Id) -> Roster_Iq
 %%     Id = string()
 %%     Roster_Iq = exmpp_xml:xmlel()
 %% @doc Make an `<iq>' to retrieve user roster.
@@ -44,7 +44,7 @@ get_roster(Id) ->
 	   [{<<"type">>, "get"}, {<<"id">>, Id}]),
     exmpp_xml:append_child(Iq, Query).
 
-%% @spec (ContactJID, Groups, Nick) -> Roster_Iq
+%% -spec (ContactJID, Groups, Nick) -> Roster_Iq
 %%     ContactJID = string()
 %%     Groups = [string()]
 %%     Nick = string()
@@ -54,7 +54,7 @@ get_roster(Id) ->
 set_item(ContactJID, Groups, Nick) ->
     set_item(roster_id(), ContactJID, Groups, Nick).
 
-%% @spec (Id, ContactJID, Groups, Nick) -> Roster_Iq
+%% -spec (Id, ContactJID, Groups, Nick) -> Roster_Iq
 %%     Id = string()
 %%     ContactJID = string()
 %%     Groups = [string()]
@@ -77,12 +77,12 @@ set_item(Id, ContactJID, Groups, Nick) ->
 	   [{<<"type">>, "set"}, {<<"id">>, Id}]),
     exmpp_xml:append_child(Iq, Query2).
 
-%% @spec () -> Roster_ID
+%% -spec () -> Roster_ID
 %%     Roster_ID = string()
 %% @doc Generate a random roster iq ID.
 %%
-%% This function uses {@link random:uniform/1}. It's up to the caller to
+%% This function uses {@link rand:uniform/1}. It's up to the caller to
 %% seed the generator.
 
 roster_id() ->
-    "rost-" ++ integer_to_list(random:uniform(65536 * 65536)).
+    "rost-" ++ integer_to_list(rand:uniform(65536 * 65536)).

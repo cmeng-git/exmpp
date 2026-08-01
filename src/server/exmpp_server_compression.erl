@@ -40,7 +40,7 @@
 %% Feature announcement.
 %% --------------------------------------------------------------------
 
-%% @spec (Methods) -> Feature
+%% -spec (Methods) -> Feature
 %%     Methods = [string()]
 %%     Feature = exmpp_xml:xmlel()
 %% @throws {stream_compression, feature_announcement, invalid_methods_list,
@@ -95,7 +95,7 @@ standard_conditions() ->
      {'setup-failed'}
     ].
 
-%% @spec (El) -> Method
+%% -spec (El) -> Method
 %%     El = exmpp_xml:xmlel()
 %%     Method = string()
 %% @doc Extract the method chosen by the initiating entity.
@@ -110,7 +110,7 @@ selected_method(#xmlel{ns = ?NS_COMPRESS, name = 'compress'} = El) ->
 selected_method(El) ->
     throw({stream_compression, selected_method, unexpected_element, El}).
 
-%% @spec () -> Compressed
+%% -spec () -> Compressed
 %%     Compressed = exmpp_xml:xmlel()
 %% @doc Prepare a `<compressed/>' element.
 
@@ -120,7 +120,7 @@ compressed() ->
 	    name = 'compressed'
 	   }.
 
-%% @spec (Condition) -> Failure
+%% -spec (Condition) -> Failure
 %%     Condition = atom()
 %%     Failure = exmpp_xml:xmlel()
 %% @throws {stream_compression, failure, invalid_condition, Condition}

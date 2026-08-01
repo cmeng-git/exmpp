@@ -74,6 +74,8 @@ sBuIal6RVH+eJ0n01/vX07mpLuGQnQ0iY/gKdqaiTAh6CR9THb8KAWm2oorWYqTR
 jnOvoy13nVkY0IvIhY9Nzvl8KiSFXm7rIrOy5QICAKA=
 -----END DH PARAMETERS-----
  */
+
+ /*
 static unsigned char dh1024_p[] = {
         0xB1,0x0B,0x8F,0x96,0xA0,0x80,0xE0,0x1D,0xDE,0x92,0xDE,0x5E,
         0xAE,0x5D,0x54,0xEC,0x52,0xC9,0x9F,0xBC,0xFB,0x06,0xA3,0xC6,
@@ -87,6 +89,7 @@ static unsigned char dh1024_p[] = {
         0x36,0x5C,0x1A,0x65,0xE6,0x8C,0xFD,0xA7,0x6D,0x4D,0xA7,0x08,
         0xDF,0x1F,0xB2,0xBC,0x2E,0x4A,0x43,0x71,
 };
+
 static unsigned char dh1024_g[] = {
         0xA4,0xD1,0xCB,0xD5,0xC3,0xFD,0x34,0x12,0x67,0x65,0xA4,0x42,
         0xEF,0xB9,0x99,0x05,0xF8,0x10,0x4D,0xD2,0x58,0xAC,0x50,0x7F,
@@ -100,8 +103,9 @@ static unsigned char dh1024_g[] = {
         0x18,0xD0,0x8B,0xC8,0x85,0x8F,0x4D,0xCE,0xF9,0x7C,0x2A,0x24,
         0x85,0x5E,0x6E,0xEB,0x22,0xB3,0xB2,0xE5,
 };
+*/
 
-static DH *dh1024;
+static EVP_PKEY *dh1024;
 #endif
 
 /*
@@ -110,7 +114,7 @@ static DH *dh1024;
  * for details.
  */
 #if OPENSSL_VERSION_NUMBER >= 0x1000005fL && !defined(OPENSSL_NO_ECDH)
-static EC_KEY *ecdh;
+static EVP_PKEY *ecdh;
 #endif
 
 #define	COPY_AND_FREE_BUF(to_send, size, b, ret)			\
@@ -863,7 +867,7 @@ verify_callback(int preverify_ok, X509_STORE_CTX *x509_ctx)
 			if (ASN1_STRING_type(gen->d.ia5) != V_ASN1_IA5STRING)
 				continue;
 
-			dnsname = (char *)ASN1_STRING_data(gen->d.ia5);
+			dnsname = (char *)ASN1_STRING_get0_data(gen->d.ia5);
 
 			/* ASN1_IA5STRING may contain NUL character; check
 			 * it. */
@@ -931,6 +935,19 @@ DRIVER_INIT(DRIVER_NAME)
 	    NULL, NULL, NULL);
 
 #ifndef OPENSSL_NO_DH
+	// Allocate context for DH key generation
+	EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new_id(EVP_PKEY_DH, NULL);
+
+	// Initialize context and generate keys/parameters
+	EVP_PKEY *dh1024 = NULL;
+	EVP_PKEY_keygen_init(ctx);
+	EVP_PKEY_keygen(ctx, &dh1024);
+
+	// Clean up when done
+	EVP_PKEY_free(dh1024);
+	EVP_PKEY_CTX_free(ctx);
+
+    /* cmeng - deprecated
 	// Initialize ephemeral Diffie-Hellman parameters.
 	dh1024 = DH_new();
 	if (dh1024 != NULL) {
@@ -941,10 +958,12 @@ DRIVER_INIT(DRIVER_NAME)
 			dh1024 = NULL;
 		}
 	}
+    */
 #endif
 
 #if OPENSSL_VERSION_NUMBER >= 0x1000005fL && !defined(OPENSSL_NO_ECDH)
-	ecdh = EC_KEY_new_by_curve_name(NID_X9_62_prime256v1);
+	// ecdh = EC_KEY_new_by_curve_name(NID_X9_62_prime256v1);
+	ecdh = EVP_EC_gen("prime256v1");
 #endif
 
 	tls_openssl_driver_entry.extended_marker = ERL_DRV_EXTENDED_MARKER;

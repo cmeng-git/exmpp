@@ -36,7 +36,7 @@
 %% Documentation / type definitions.
 %% --------------------------------------------------------------------
 
-%% @type ecaps() = {ecaps, Identities, Features, Forms}
+%% -type ecaps() = {ecaps, Identities, Features, Forms}
 %%     Identities = identity() | [identity()]
 %%     Features   = [ns()]     | []
 %%     Forms      = form()     | [form()] | [].
@@ -47,12 +47,12 @@
 %% Hash creation.
 %% --------------------------------------------------------------------
 
-%% @spec (Caps) -> Hash
+%% -spec (Caps) -> Hash
 %%     Caps = ecaps() | identity() | [identity()]
 %%     Hash = hash()
 %% @doc Generate a hash from a Caps record.
 
--spec(make/1 :: (ecaps() | identity() | [identity()]) -> hash()).
+-spec make(ecaps() | identity() | [identity()]) -> hash().
 
 make(#identity{} = Identity) ->
     make(Identity, []);
@@ -70,14 +70,14 @@ make(_) ->
     throw({exmpp_caps, make, 'Caps : ecaps() | identity() | [identity()]'}).
 
 
-%% @spec (Identities, Features) -> Hash
+%% -spec (Identities, Features) -> Hash
 %%     Identities = identity() | [identity()]
 %%     Features   = [ns()]
 %%     Hash       = hash()
 %% @doc Generate a hash from an identity record or from a list of records
 %%      and a list of namespaces .
 
--spec(make/2 :: (identity() | [identity()], [ns()]) -> hash()).
+-spec make(identity() | [identity()], [ns()]) -> hash().
 
 make(_, Features) when not is_list(Features) ->
     throw({exmpp_caps, make, 'Features : [ns()]'});
@@ -95,7 +95,7 @@ make(Identities, Features) ->
     hash_caps(identities(Identities) ++ features(Features)).
 
 
-%% @spec (Identities, Features, Forms) -> Hash
+%% -spec (Identities, Features, Forms) -> Hash
 %%     Identities = identity() | [identity()]
 %%     Features   = [ns()]
 %%     Forms      = form()     | [form()]
@@ -103,7 +103,7 @@ make(Identities, Features) ->
 %% @doc Generate a hash from an identity record or from a list of identity records,
 %%      a list of namespaces, and a form or a list of forms .
 
--spec(make/3 :: (identity() | [identity()], [ns()], form() | [form()]) -> hash()).
+-spec make(identity() | [identity()], [ns()], form() | [form()]) -> hash().
 
 make(_, Features, _) when not is_list(Features) ->
     throw({exmpp_caps, make, 'Features : [ns()]'});
@@ -131,11 +131,11 @@ make(Identities, Features, Forms) ->
 %% Internal functions.
 %% --------------------------------------------------------------------
 
-%% @spec (Forms) -> String
+%% -spec (Forms) -> String
 %%     Forms  = form()  | [form()]
 %%     String = string()
 
--spec(forms/1 :: (form()  | [form()]) -> string()).
+-spec forms(form()  | [form()]) -> string().
 
 forms(#form{type = Type, fields = Fields}) ->
     Type ++ "<" ++ fields(Fields);
@@ -147,11 +147,11 @@ forms(_) ->
     throw({exmpp_caps, forms, 'Forms : form() | [form()]'}).
 
 
-%% @spec (Fields) -> String
+%% -spec (Fields) -> String
 %%     Fields = field() | [field()]
 %%     String = string()
 
--spec(fields/1 :: (field()  | [field()]) -> string()).
+-spec fields(field()  | [field()]) -> string().
 
 fields(#field{var = Var, values = Values}) ->
     Var ++ "<" ++ values(Values);
@@ -163,11 +163,11 @@ fields(_) ->
     throw({exmpp_caps, fields, 'Fields : field() | [field()]'}).
 
 
-%% @spec (Values) -> String
+%% -spec (Values) -> String
 %%     Values = [value()]
 %%     String = string()
 
--spec(values/1 :: ([value()]) -> string()).
+-spec values([value()]) -> string().
 
 values(Values) when is_list(Values) ->
     lists:foldl(
@@ -183,11 +183,11 @@ values(_) ->
     throw({exmpp_caps, values, 'Values : [value()]'}).
 
 
-%% @spec (Features) -> String
+%% -spec (Features) -> String
 %%     Features = [ns()]
 %%     String   = string()
 
--spec(features/1 :: ([ns()]) -> string()).
+-spec features([ns()]) -> string().
 
 features(Features) when is_list(Features) ->
     values(Features);
@@ -195,11 +195,11 @@ features(_) ->
     throw({exmpp_caps, features, 'Features : [ns()]'}).
 
 
-%% @spec (Identities) -> String
+%% -spec (Identities) -> String
 %%     Identities = identity() | [identity()]
 %%     String     = string()
 
--spec(identities/1 :: (identity() | [identity()]) -> string()).
+-spec identities(identity() | [identity()]) -> string().
 
 identities(#identity{category = Category, type = Type, lang = Lang, name = Name}) ->
     Category ++ "/" ++ Type ++ "/" ++ Lang ++ "/" ++ Name ++ "<";
@@ -211,13 +211,13 @@ identities(_) ->
     throw({exmpp_caps, identities, 'Identities : identity() | [identity()]'}).
 
 
-%% @spec (String) -> Hash
+%% -spec (String) -> Hash
 %%     String = string()
 %%     Hash   = hash()
 
--spec(hash_caps/1 :: (string()) -> hash()).
+-spec hash_caps(string()) -> hash().
 
 hash_caps(String) when is_list(String)->
-    base64:encode(crypto:sha(unicode:characters_to_list(String)));
+    base64:encode(crypto:hash(sha, unicode:characters_to_list(String)));
 hash_caps(_) ->
     throw({exmpp_caps, hash_caps, 'String : string()'}).

@@ -48,7 +48,7 @@
 %% Creating stanza.
 %% --------------------------------------------------------------------
 
-%% @spec (Request_IQ) -> Fields_IQ
+%% -spec (Request_IQ) -> Fields_IQ
 %%     Request_IQ = exmpp_xml:xmlel()
 %%     Fields_IQ = exmpp_xml:xmlel()
 %% @doc Make an `<iq>' for advertising fields.
@@ -58,7 +58,7 @@
 fields(Request_IQ) ->
     fields(Request_IQ, both).
 
-%% @spec (Request_IQ, Auth) -> Fields_IQ
+%% -spec (Request_IQ, Auth) -> Fields_IQ
 %%     Request_IQ = exmpp_xml:xmlel()
 %%     Auth = plain | digest | both
 %%     Fields_IQ = exmpp_xml:xmlel()
@@ -87,7 +87,7 @@ fields(Request_IQ, Auth) when ?IS_IQ(Request_IQ) ->
      },
     exmpp_iq:result(Request_IQ, Query).
 
-%% @spec (Password_IQ) -> Success_IQ
+%% -spec (Password_IQ) -> Success_IQ
 %%     Password_IQ = exmpp_xml:xmlel()
 %%     Success_IQ = exmpp_xml:xmlel()
 %% @doc Make an `<iq>' to notify a successfull authentication.
@@ -95,7 +95,7 @@ fields(Request_IQ, Auth) when ?IS_IQ(Request_IQ) ->
 success(Password_IQ) when ?IS_IQ(Password_IQ) ->
     exmpp_iq:result(Password_IQ).
 
-%% @spec (Password_IQ, Condition) -> Failure_IQ
+%% -spec (Password_IQ, Condition) -> Failure_IQ
 %%     Password_IQ = exmpp_xml:xmlel()
 %%     Condition = not_authorized | conflict | not_acceptable
 %%     Failure_IQ = exmpp_xml:xmlel()
@@ -116,7 +116,7 @@ failure(Password_IQ, Condition) when ?IS_IQ(Password_IQ) ->
 %% Accessing informations.
 %% --------------------------------------------------------------------
 
-%% @spec (Request_IQ) -> bool()
+%% -spec (Request_IQ) -> boolean()
 %%     Request_IQ = exmpp_xml:xmlel()
 %% @doc Tell if the initiating entity asks for the authentication fields.
 
@@ -133,7 +133,7 @@ want_fields(Request_IQ) when ?IS_IQ(Request_IQ) ->
 want_fields(_Stanza) ->
     false.
 
-%% @spec (Password_IQ) -> Credentials
+%% -spec (Password_IQ) -> Credentials
 %%     Password_IQ = exmpp_xml:xmlel()
 %%     Credentials = {Username, Password, Resource}
 %%     Username = string()
@@ -188,7 +188,7 @@ get_credentials2([], Credentials) ->
 %% Tools.
 %% --------------------------------------------------------------------
 
-%% @spec (Hex) -> Plain
+%% -spec (Hex) -> Plain
 %%     Hex = string()
 %%     Plain = list()
 %% @doc Decode hexadecimal string.

@@ -10,7 +10,7 @@ dnl   EXPAT_LIBS
 AC_DEFUN([EXMPP_EXPAT],
 [
   AC_ARG_WITH(expat,
-    AC_HELP_STRING([--with-expat=PREFIX],
+    AS_HELP_STRING([--with-expat=PREFIX],
       [prefix where Expat is installed (optional)]),
     expat_prefix="$withval",)
 

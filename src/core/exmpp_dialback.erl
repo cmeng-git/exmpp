@@ -34,7 +34,7 @@
 %% Creating elements.
 %% --------------------------------------------------------------------
 
-%% @spec (From, To, Key) -> Result
+%% -spec  (From, To, Key) -> Result
 %%     From = exmpp_jid:jid() | string()
 %%     To = exmpp_jid:jid() | string()
 %%     Key = binary() | string()
@@ -52,7 +52,7 @@ key(From, To, Key) ->
 		   },
     exmpp_xml:set_cdata(Result, Key).
 
-%% @spec (From, To, ID, Key) -> Request
+%% -spec  (From, To, ID, Key) -> Request
 %%     From = exmpp_jid:jid() | string()
 %%     To = exmpp_jid:jid() | string()
 %%     ID = binary() | string() | random
@@ -72,9 +72,9 @@ verify_request(From, To, ID, Key) ->
 		    },
     exmpp_xml:set_cdata(Request, Key).
 
-%% @spec (Request, Is_Valid) -> Response
+%% -spec  (Request, Is_Valid) -> Response
 %%     Request = exmpp_xml:xmlel()
-%%     Is_Valid = bool()
+%%     Is_Valid = boolean()
 %%     Response = exmpp_xml:xmlel()
 %% @doc Prepare a `<db:verify/>' element to answer to the Receiving
 %% Server.
@@ -86,7 +86,7 @@ verify_response(Request, Is_Valid) ->
         false -> exmpp_stanza:set_type(Response, "invalid")
     end.
 
-%% @spec (Result) -> Response
+%% -spec  (Result) -> Response
 %%     Result = exmpp_xml:xmlel()
 %%     Response = exmpp_xml:xmlel()
 %% @doc Prepare a `<db:result/>' element to answer to the Originating
@@ -96,7 +96,7 @@ validate(Result) ->
     Response = exmpp_stanza:reply_without_content(Result),
     exmpp_stanza:set_type(Response, "valid").
 
-%% @spec (From, To) -> Response
+%% -spec  (From, To) -> Response
 %%     From = exmpp_jid:jid() | string()
 %%     To = exmpp_jid:jid() | string()
 %%     Response = exmpp_xml:xmlel()

@@ -33,7 +33,7 @@
 	 items/2
 	]).
 
-%% @spec (To) -> Iq
+%% -spec (To) -> Iq
 %%     To = string()
 %%     Iq = exmpp_xml:xmlel()
 %% @doc Make an <iq/> for a disco#info
@@ -43,7 +43,7 @@ info(To) ->
   Iq = ?IQ_GET(To, iq_id()),
   exmpp_xml:append_child(Iq, Query).
 
-%% @spec (To, Node) -> Iq
+%% -spec (To, Node) -> Iq
 %%     To   = string()
 %%     Node = string()
 %%     Iq   = exmpp_xml:xmlel()
@@ -54,7 +54,7 @@ info(To, Node) ->
   Iq = ?IQ_GET(To, iq_id()),
   exmpp_xml:append_child(Iq, Query).
 
-%% @spec (To) -> Iq
+%% -spec (To) -> Iq
 %%     To = string()
 %%     Iq = exmpp_xml:xmlel()
 %% @doc Make an <iq/> for a disco#items
@@ -64,7 +64,7 @@ items(To) ->
   Iq = ?IQ_GET(To, iq_id()),
   exmpp_xml:append_child(Iq, Query).
 
-%% @spec (To, Node) -> Iq
+%% -spec (To, Node) -> Iq
 %%     To   = string()
 %%     Node = string()
 %%     Iq   = exmpp_xml:xmlel()
@@ -75,12 +75,12 @@ items(To, Node) ->
   Iq = ?IQ_GET(To, iq_id()),
   exmpp_xml:append_child(Iq, Query).
 
-%% @spec () -> Iq_ID
+%% -spec () -> Iq_ID
 %%     Iq_ID = string()
 %% @doc Generate a random iq ID.
 %%
-%% This function uses {@link random:uniform/1}. It's up to the caller to
+%% This function uses {@link rand:uniform/1}. It's up to the caller to
 %% seed the generator.
 
 iq_id() ->
-    "iq-" ++ integer_to_list(random:uniform(65536 * 65536)).
+    "iq-" ++ integer_to_list(rand:uniform(65536 * 65536)).

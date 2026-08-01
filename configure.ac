@@ -2,9 +2,8 @@ dnl ------------------------------------------------------------------
 dnl Autoconf initialization.
 dnl ------------------------------------------------------------------
 
-AC_INIT([exmpp], m4_esyscmd([(git describe 2>/dev/null || echo v0.9.9) | sed 's/^v//' |
-        sed 's/-\([0-9]\)-/-0\1-/' | tr -d '\n' || echo 1]),
-        [js.pedron@meetic-corp.com], [exmpp])
+AC_INIT([exmpp],m4_esyscmd((git describe 2>/dev/null || echo v0.9.9) | sed 's/^v//' |
+        sed 's/-\([0-9]\)-/-0\1-/' | tr -d '\n' || echo 1),[js.pedron@meetic-corp.com],[exmpp])
 
 AC_CONFIG_SRCDIR([include/exmpp.hrl])
 AC_CONFIG_MACRO_DIR([m4])
@@ -13,7 +12,7 @@ AC_CONFIG_AUX_DIR([ac-aux])
 AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE([foreign])
 
-AC_PREREQ([2.60])
+AC_PREREQ([2.71])
 AC_REVISION([$Revision$])
 
 dnl ------------------------------------------------------------------
@@ -57,9 +56,9 @@ dnl ------------------------------------------------------------------
 dnl Compilater and other tools.
 dnl ------------------------------------------------------------------
 
-AC_PROG_CC_STDC
+AC_PROG_CC
 
-AC_PROG_LD
+LT_PATH_LD
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_PROG_SED
@@ -76,10 +75,10 @@ m4_defun([AC_PROG_CXX],[])
 m4_undefine([AC_PROG_F77])
 m4_defun([AC_PROG_F77],[])
 
-AM_DISABLE_STATIC
-AM_ENABLE_SHARED
+AC_DISABLE_STATIC([])
+AC_ENABLE_SHARED([])
 
-AM_PROG_LIBTOOL
+LT_INIT
 
 dnl ------------------------------------------------------------------
 dnl Options.
@@ -92,7 +91,7 @@ else
 	default_enable_debug="no"
 fi
 AC_ARG_ENABLE([debug],
-	AC_HELP_STRING([--enable-debug],
+	AS_HELP_STRING([--enable-debug],
 	    [turn on debugging [[default=auto]]]),,
 	enable_debug=$default_enable_debug)
 if test "x${enable_debug}" = "xyes"; then
@@ -115,7 +114,7 @@ append_to_EMKOPTS "warn_unused_import"
 
 dnl Treat warnings as errors.
 AC_ARG_ENABLE([warnings],
-	AC_HELP_STRING([--enable-warnings],
+	AS_HELP_STRING([--enable-warnings],
 	    [treat warnings as errors [[default=yes]]]),,
 	enable_warnings="yes")
 if test "x${enable_warnings}" = "xyes" -a "x${GCC}" = "xyes"; then
@@ -124,7 +123,7 @@ fi
 
 dnl Compatibility modules.
 AC_ARG_ENABLE([compat],
-	AC_HELP_STRING([--enable-compat],
+	AS_HELP_STRING([--enable-compat],
 	    [build compatibility modules [[default=no]]]),,
 	enable_compat="no")
 if test "x${enable_compat}" = "xyes"; then
@@ -140,21 +139,21 @@ AC_SUBST(COMPAT_MODULES)
 
 dnl Documentation.
 AC_ARG_ENABLE([documentation],
-	AC_HELP_STRING([--enable-documentation],
+	AS_HELP_STRING([--enable-documentation],
 	    [build documentation [[default=yes]]]),,
 	enable_documentation="yes")
 AM_CONDITIONAL(ENABLE_DOCUMENTATION, test "x${enable_documentation}" = "xyes")
 
 dnl Examples.
 AC_ARG_ENABLE([examples],
-	AC_HELP_STRING([--enable-examples],
+	AS_HELP_STRING([--enable-examples],
 	    [build examples [[default=no]]]),,
 	enable_examples="no")
 AM_CONDITIONAL(ENABLE_EXAMPLES, test "x${enable_examples}" = "xyes")
 
 dnl Internal escaping function to use.
 AC_ARG_ENABLE([escaping-using-cdata],
-	AC_HELP_STRING([--enable-escaping-using-cdata],
+	AS_HELP_STRING([--enable-escaping-using-cdata],
 	    [escape XML text node with CDATA sections [[default=off]]]),,
 	enable_escaping_using_cdata="no")
 if test "x${enable_escaping_using_cdata}" = "xyes"; then
@@ -170,7 +169,7 @@ COLORED_ECHO([%BErlang environment%b])
 
 dnl Available flags.
 AC_ARG_WITH([erlang],
-	AC_HELP_STRING([--with-erlang=PREFIX],
+	AS_HELP_STRING([--with-erlang=PREFIX],
 	    [prefix where build machine's Erlang is installed (optional)]),
 	with_erlang=${withval%/},
 	with_erlang="")
@@ -260,7 +259,7 @@ dnl otherwise.
 AC_MSG_CHECKING([for SMP support])
 
 AC_ARG_ENABLE([smp-support],
-	AC_HELP_STRING([--enable-smp-support],
+	AS_HELP_STRING([--enable-smp-support],
 	    [enable SMP support [[default=yes]]]),,
 	enable_smp_support="yes")
 AM_CONDITIONAL(ENABLE_SMP_SUPPORT, test "x${enable_smp_support}" = "xyes")
@@ -332,7 +331,7 @@ dnl ------------------------------------------------------------------
 echo
 COLORED_ECHO([%BDetect Operating System%b])
 
-AC_CANONICAL_SYSTEM
+AC_CANONICAL_TARGET
 #AC_DEFINE_UNQUOTED(CPU_VENDOR_OS, "$target")
 #AC_SUBST(target_os)
 case "$target_os" in
@@ -388,7 +387,7 @@ dnl Autoconf output.
 dnl ------------------------------------------------------------------
 
 echo
-AM_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([
 	c_src/Makefile
 	include/Makefile

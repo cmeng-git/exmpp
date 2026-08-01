@@ -48,7 +48,7 @@
 %% Public API.
 %% --------------------------------------------------------------------
 
-%% @spec () -> Result
+%% -spec  () -> Result
 %%     Result = term()
 %% @doc Start the supervisor and link to it.
 %%

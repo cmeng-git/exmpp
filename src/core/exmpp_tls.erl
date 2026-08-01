@@ -177,7 +177,7 @@ register_builtin_engine(Name, Driver, Auth_Methods) ->
 %% Registry handling.
 %% --------------------------------------------------------------------
 
-%% @spec (Name, Driver, Auth_Methods) -> ok
+%% -spec  (Name, Driver, Auth_Methods) -> ok
 %%     Name = atom()
 %%     Driver = atom()
 %%     Auth_Mehods = [{atom(), Priority}]
@@ -187,7 +187,7 @@ register_builtin_engine(Name, Driver, Auth_Methods) ->
 register_engine(Name, Driver, Auth_Methods) ->
     register_engine(Name, undefined, Driver, Auth_Methods).
 
-%% @spec (Name, Driver_Path, Driver, Auth_Methods) -> ok
+%% -spec  (Name, Driver_Path, Driver, Auth_Methods) -> ok
 %%     Name = atom()
 %%     Driver_Path = string()
 %%     Driver = atom()
@@ -208,21 +208,21 @@ register_engine(Name, Driver_Path, Driver, Auth_Methods)
         {error, Exception} -> throw(Exception)
     end.
 
-%% @spec () -> [Auth_Method]
+%% -spec  () -> [Auth_Method]
 %%     Auth_Method = atom()
 %% @doc Return the list of supported auth methods.
 
 get_auth_methods() ->
     gen_server:call(?SERVER, get_auth_methods).
 
-%% @spec () -> [Engine_Name]
+%% -spec  () -> [Engine_Name]
 %%     Engine_Name = atom()
 %% @doc Return the list of TLS engines.
 
 get_engine_names() ->
     gen_server:call(?SERVER, get_engine_names).
 
-%% @spec (Auth_Method) -> [Engine_Name]
+%% -spec  (Auth_Method) -> [Engine_Name]
 %%     Auth_Method = atom()
 %%     Engine_Name = atom()
 %% @doc Return the list of TLS engines which support the given auth method.
@@ -233,7 +233,7 @@ get_engine_names(Auth_Method) ->
     Engines = gen_server:call(?SERVER, {get_engines, Auth_Method}),
     [E#tls_engine.name || E <- Engines].
 
-%% @spec (Auth_Method) -> [Engine_Name]
+%% -spec  (Auth_Method) -> [Engine_Name]
 %%     Auth_Method = atom()
 %%     Engine_Name = atom()
 %% @doc Return the name of the prefered TLS engines which support the
@@ -246,7 +246,7 @@ get_prefered_engine_name(Auth_Method) ->
         [Engine | _] -> Engine#tls_engine.name
     end.
 
-%% @spec (Engine_Name) -> bool()
+%% -spec  (Engine_Name) -> boolean()
 %%     Engine_Name = atom()
 %% @doc Tell if `Engine_Name' is available.
 
@@ -256,7 +256,7 @@ is_engine_available(Engine_Name) ->
         _         -> true
     end.
 
-%% @spec (Engine_Name) -> Driver_Name
+%% -spec  (Engine_Name) -> Driver_Name
 %%     Engine_Name = atom()
 %%     Driver_Name = atom()
 %% @doc Return the port driver name associated to the given engine.
@@ -271,7 +271,7 @@ get_engine_driver(Engine_Name) ->
 %% Handshake and other TLS operations.
 %% --------------------------------------------------------------------
 
-%% @spec (Socket_Desc, Identity, Peer_Verification, Options) -> TLS_Socket
+%% -spec  (Socket_Desc, Identity, Peer_Verification, Options) -> TLS_Socket
 %%     Socket_Desc = {Mod, Socket}
 %%     Mod = atom()
 %%     Socket = term()
@@ -279,7 +279,7 @@ get_engine_driver(Engine_Name) ->
 %%     Auth_Method = atom()
 %%     Certificate = string()
 %%     Private_Key = string()
-%%     Peer_Verification = bool() | Peer_Name
+%%     Peer_Verification = boolean() | Peer_Name
 %%     Peer_Name = string()
 %%     Options = [Option]
 %%     Option = {engine, Engine} | {mode, Mode} | {trusted_certs, Auth_Method, Certs} | peer_cert_required | accept_expired_cert | accept_revoked_cert | accept_non_trusted_cert | accept_corrupted_cert
@@ -291,7 +291,7 @@ get_engine_driver(Engine_Name) ->
 connect(Socket_Desc, Identity, Peer_Verification, Options) ->
     handshake(client, Socket_Desc, Identity, Peer_Verification, Options).
 
-%% @spec (Socket_Desc, Identity, Peer_Verification, Options) -> TLS_Socket
+%% -spec  (Socket_Desc, Identity, Peer_Verification, Options) -> TLS_Socket
 %%     Socket_Desc = {Mod, Socket}
 %%     Mod = atom()
 %%     Socket = term()
@@ -299,7 +299,7 @@ connect(Socket_Desc, Identity, Peer_Verification, Options) ->
 %%     Auth_Method = atom()
 %%     Certificate = string()
 %%     Private_Key = string()
-%%     Peer_Verification = bool() | Peer_Name
+%%     Peer_Verification = boolean() | Peer_Name
 %%     Peer_Name = string()
 %%     Options = [Option]
 %%     Option = {engine, Engine} | {mode, Mode} | {trusted_certs, {Auth_Method, Certs}} | peer_cert_required | accept_expired_cert | accept_revoked_cert | accept_non_trusted_cert | accept_corrupted_cert
@@ -437,7 +437,7 @@ handshake2(server = Mode, Socket_Desc, Port, Recv_Timeout) ->
             throw({tls, handshake, underlying_recv, Reason})
     end.
 
-%% @spec (TLS_Socket) -> Certificate | undefined
+%% -spec  (TLS_Socket) -> Certificate | undefined
 %%     TLS_Socket = tls_socket()
 %%     Certificate = certificate()
 %%     Reason = term()
@@ -476,7 +476,7 @@ get_peer_certificate(#tls_socket{port = Port}) ->
 	    end
     end.
 
-%% @spec (TLS_Socket) -> Result
+%% -spec  (TLS_Socket) -> Result
 %%     TLS_Socket = tls_socket()
 %%     Result = integer()
 %% @doc Return verify result.
@@ -484,7 +484,7 @@ get_peer_certificate(#tls_socket{port = Port}) ->
 get_verify_result(#tls_socket{port = Port}) ->
     engine_get_verify_result(Port).
 
-%% @spec (TLS_Socket) -> Socket_Desc
+%% -spec  (TLS_Socket) -> Socket_Desc
 %%     TLS_Socket = tls_socket()
 %%     Socket_Desc = {Mod, Socket}
 %% @doc Shutdown the TLS session.
@@ -496,7 +496,7 @@ get_verify_result(#tls_socket{port = Port}) ->
 shutdown(TLS_Socket) ->
     shutdown(TLS_Socket, unidirectional).
 
-%% @spec (TLS_Socket, Mode) -> Socket_Desc
+%% -spec  (TLS_Socket, Mode) -> Socket_Desc
 %%     TLS_Socket = tls_socket()
 %%     Mode = unidirectional | bidirectional
 %%     Socket_Desc = {Mod, Socket}
@@ -510,7 +510,7 @@ shutdown(TLS_Socket) ->
 shutdown(TLS_Socket, Mode) ->
     shutdown(TLS_Socket, Mode, infinity).
 
-%% @spec (TLS_Socket, Mode, Timeout) -> Socket_Desc
+%% -spec  (TLS_Socket, Mode, Timeout) -> Socket_Desc
 %%     TLS_Socket = tls_socket()
 %%     Mode = unidirectional | bidirectional
 %%     Timeout = infinity | integer()
@@ -568,7 +568,7 @@ shutdown(#tls_socket{socket = Socket_Desc, port = Port} = TLS_Socket,
             Socket_Desc
     end.
 
-%% @spec (TLS_Socket) -> Socket_Desc
+%% -spec  (TLS_Socket) -> Socket_Desc
 %%     TLS_Socket = tls_socket()
 %%     Socket_Desc = {Mod, Socket}
 %% @doc Flag the TLS session as down but do not exchange "close notify".
@@ -580,7 +580,7 @@ quiet_shutdown(#tls_socket{socket = Socket_Desc, port = Port}) ->
     exmpp_internals:close_port(Port),
     Socket_Desc.
 
-%% @spec (TLS_Socket) -> Finished
+%% -spec  (TLS_Socket) -> Finished
 %%     TLS_Socket = tls_socket()
 %%     Finished = binary()
 %% @doc Retrieve latest "Finished" message (received on this side).
@@ -591,7 +591,7 @@ quiet_shutdown(#tls_socket{socket = Socket_Desc, port = Port}) ->
 get_peer_finished(#tls_socket{port = Port}) ->
     engine_get_peer_finished(Port).
 
-%% @spec (TLS_Socket) -> Finished
+%% -spec  (TLS_Socket) -> Finished
 %%     TLS_Socket = tls_socket()
 %%     Finished = binary()
 %% @doc Retrieve latest "Finished" message (sent out from this side).
@@ -685,7 +685,7 @@ check_peer_verification(Peer_Verif, _Mode) ->
 %% Common socket API.
 %% --------------------------------------------------------------------
 
-%% @spec (TLS_Socket, Orig_Packet) -> ok | {error, Reason}
+%% -spec  (TLS_Socket, Orig_Packet) -> ok | {error, Reason}
 %%     TLS_Socket = tls_socket()
 %%     Orig_Packet = binary() | list()
 %%     Reason = term()
@@ -704,7 +704,7 @@ send_data(#tls_socket{port = Port}, Packet) ->
         engine_set_decrypted_output(Port, Packet),
         {ok, engine_get_encrypted_output(Port)}.
 
-%% @spec (TLS_Socket) -> {ok, Orig_Packet} | {error, Reason}
+%% -spec  (TLS_Socket) -> {ok, Orig_Packet} | {error, Reason}
 %%     TLS_Socket = tls_socket()
 %%     Orig_Packet = binary() | list()
 %%     Reason = term()
@@ -713,7 +713,7 @@ send_data(#tls_socket{port = Port}, Packet) ->
 recv(TLS_Socket) ->
     recv(TLS_Socket, infinity).
 
-%% @spec (TLS_Socket, Timeout) -> {ok, Orig_Packet} | {error, Reason}
+%% -spec  (TLS_Socket, Timeout) -> {ok, Orig_Packet} | {error, Reason}
 %%     TLS_Socket = tls_socket()
 %%     Timeout = integer()
 %%     Orig_Packet = binary() | list()
@@ -754,7 +754,7 @@ recv(#tls_socket{socket = Socket_Desc, port = Port} = TLS_Socket, Timeout) ->
             {error, Exception}
     end.
 
-%% @spec (TLS_Socket, Packet) -> {ok, Orig_Packet} | {error, Reason}
+%% -spec  (TLS_Socket, Packet) -> {ok, Orig_Packet} | {error, Reason}
 %%     TLS_Socket = tls_socket()
 %%     Packet = binary() | list()
 %%     Orig_Packet = binary() | list()
@@ -813,7 +813,7 @@ recv_common(#tls_socket{socket = Socket_Desc, port = Port}) ->
             end
     end.
 
-%% @spec (TLS_Socket, Options) -> {ok, Option_Values} | {error, posix()}
+%% -spec  (TLS_Socket, Options) -> {ok, Option_Values} | {error, posix()}
 %%     TLS_Socket = tls_socket()
 %%     Mod = atom()
 %%     Socket = term()
@@ -824,7 +824,7 @@ recv_common(#tls_socket{socket = Socket_Desc, port = Port}) ->
 getopts(#tls_socket{socket = Socket_Desc}, Options) ->
     exmpp_internals:gen_getopts(Socket_Desc, Options).
 
-%% @spec (TLS_Socket, Options) -> ok | {error, posix()}
+%% -spec  (TLS_Socket, Options) -> ok | {error, posix()}
 %%     TLS_Socket = tls_socket()
 %%     Mod = atom()
 %%     Socket = term()
@@ -834,7 +834,7 @@ getopts(#tls_socket{socket = Socket_Desc}, Options) ->
 setopts(#tls_socket{socket = Socket_Desc}, Options) ->
     exmpp_internals:gen_setopts(Socket_Desc, Options).
 
-%% @spec (TLS_Socket) -> {ok, {Address, Port}} | {error, posix()}
+%% -spec  (TLS_Socket) -> {ok, {Address, Port}} | {error, posix()}
 %%     TLS_Socket = tls_socket()
 %%     Mod = atom()
 %%     Socket = term()
@@ -845,7 +845,7 @@ setopts(#tls_socket{socket = Socket_Desc}, Options) ->
 peername(#tls_socket{socket = Socket_Desc}) ->
     exmpp_internals:gen_peername(Socket_Desc).
 
-%% @spec (TLS_Socket) -> {ok, {Address, Port}} | {error, posix()}
+%% -spec  (TLS_Socket) -> {ok, {Address, Port}} | {error, posix()}
 %%     TLS_Socket = tls_socket()
 %%     Mod = atom()
 %%     Socket = term()
@@ -856,7 +856,7 @@ peername(#tls_socket{socket = Socket_Desc}) ->
 sockname(#tls_socket{socket = Socket_Desc}) ->
     exmpp_internals:gen_sockname(Socket_Desc).
 
-%% @spec (TLS_Socket, Pid) -> ok | {error, Reason}
+%% -spec  (TLS_Socket, Pid) -> ok | {error, Reason}
 %%     TLS_Socket = tls_socket()
 %%     Pid = pid()
 %%     Reason = term()
@@ -865,7 +865,7 @@ sockname(#tls_socket{socket = Socket_Desc}) ->
 controlling_process(#tls_socket{socket = Socket_Desc}, Pid) ->
     exmpp_internals:gen_controlling_process(Socket_Desc, Pid).
 
-%% @spec (TLS_Socket) -> ok | {error, Reason}
+%% -spec  (TLS_Socket) -> ok | {error, Reason}
 %%     TLS_Socket = tls_socket()
 %%     Reason = term()
 %% @doc Shutdown the TLS session and close the underlying socket.
@@ -1174,5 +1174,5 @@ terminate(_Reason, _State) ->
 %% Documentation / type definitions.
 %% --------------------------------------------------------------------
 
-%% @type tls_socket().
+%% -type tls_socket().
 %% TLS socket obtained with {@link connect/4} or {@link accept/4}.

@@ -30,7 +30,7 @@
 %% Creating stanza.
 %% --------------------------------------------------------------------
 
-%% @spec (To, List_Name) -> Push_IQ
+%% -spec (To, List_Name) -> Push_IQ
 %%     To = exmpp_jid:jid() | string()
 %%     List_Name = string()
 %%     Push_IQ = exmpp_xml:xmlel()

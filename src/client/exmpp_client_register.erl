@@ -31,7 +31,7 @@
 	 register_account/1, register_account/2,
 	 remove_account/0, remove_account/1]).
 
-%% @spec () -> Register_Iq
+%% -spec () -> Register_Iq
 %%     Register_Iq = exmpp_xml:xmlel()
 %% @doc Make an `<iq>' to get the instruction to register and the list
 %% of registration fields.
@@ -41,7 +41,7 @@
 get_registration_fields() ->
     get_registration_fields(register_id()).
 
-%% @spec (Id) -> Register_Iq
+%% -spec (Id) -> Register_Iq
 %%     Id = string()
 %%     Register_Iq = exmpp_xml:xmlel()
 %% @doc Make an `<iq>' to get the instruction to register and the list
@@ -55,7 +55,7 @@ get_registration_fields(Id) ->
 	   [{<<"type">>, "get"}, {<<"id">>, Id}]),
     exmpp_xml:append_child(Iq, Query).
 
-%% @spec (Fields) -> Register_Iq
+%% -spec (Fields) -> Register_Iq
 %%     Fields = [Field]
 %%     Field = {Fieldname, Value}
 %%     Fieldname = atom()
@@ -65,7 +65,7 @@ get_registration_fields(Id) ->
 register_account(Fields) ->
     register_account(register_id(), Fields).
 
-%% @spec (Id, Fields) -> Register_Iq
+%% -spec (Id, Fields) -> Register_Iq
 %%     Id = string()
 %%     Fields = [Field]
 %%     Field = {Fieldname, Value}
@@ -84,14 +84,14 @@ register_account(Id, Fields) ->
 	   [{<<"type">>, "set"}, {<<"id">>, Id}]),
     exmpp_xml:append_child(Iq, PreparedQuery).
 
-%% @spec () -> RemoveRegister_Iq
+%% -spec () -> RemoveRegister_Iq
 %%     RemoveRegister_Iq = exmpp_xml:xmlel()
 %% @doc Make an `<iq>' that delete user account on the server. The
 %% user is supposed to be already logged in.
 remove_account() ->
     remove_account(register_id()).
 
-%% @spec (Id) -> RemoveRegister_Iq
+%% -spec (Id) -> RemoveRegister_Iq
 %%     Id = string()
 %%     RemoveRegister_Iq = exmpp_xml:xmlel()
 %% @doc Make an `<iq>' that delete user account on the server. The
@@ -125,12 +125,12 @@ append_fields(Query, [{Field, Value}|Fields])
 
 
 
-%% @spec () -> Register_ID
+%% -spec () -> Register_ID
 %%     Register_ID = string()
 %% @doc Generate a random register iq ID.
 %%
-%% This function uses {@link random:uniform/1}. It's up to the caller to
+%% This function uses {@link rand:uniform/1}. It's up to the caller to
 %% seed the generator.
 
 register_id() ->
-    "reg-" ++ integer_to_list(random:uniform(65536 * 65536)).
+    "reg-" ++ integer_to_list(rand:uniform(65536 * 65536)).

@@ -104,7 +104,7 @@ start_link() ->
 %% Stringprep profiles.
 %% --------------------------------------------------------------------
 
-%% @spec (String) -> Prepd_String
+%% -spec (String) -> Prepd_String
 %%     String = binary() | string()
 %%     Prepd_String = binary() | string()
 %% @throws {stringprep, nodeprep, exmpp_not_started, String} |
@@ -123,7 +123,7 @@ nodeprep(String) ->
             Result
     end.
 
-%% @spec (String) -> Prepd_String
+%% -spec (String) -> Prepd_String
 %%     String = binary() | string()
 %%     Prepd_String = binary() | string()
 %% @throws {stringprep, nameprep, exmpp_not_started, String} |
@@ -142,7 +142,7 @@ nameprep(String) ->
             Result
     end.
 
-%% @spec (String) -> Prepd_String
+%% -spec (String) -> Prepd_String
 %%     String = binary() | string()
 %%     Prepd_String = binary() | string()
 %% @throws {stringprep, resourceprep, exmpp_not_started, String} |
@@ -165,13 +165,13 @@ resourceprep(String) ->
 %% Tools.
 %% --------------------------------------------------------------------
 
-%% @spec (String) -> bool()
+%% -spec (String) -> boolean()
 %%     String = binary() | string()
 %% @throws {stringprep, nodeprep, exmpp_not_started, String}
 %% @doc Tell if `String' conforms the NODEPREP stringprep profile.
 
 -spec is_node
-(binary() | string()) -> bool().
+(binary() | string()) -> boolean().
 
 is_node(<<>>) ->
     false;
@@ -186,13 +186,13 @@ is_node(String) ->
             false
     end.
 
-%% @spec (String) -> bool()
+%% -spec (String) -> boolean()
 %%     String = binary() | string()
 %% @throws {stringprep, nameprep, exmpp_not_started, String}
 %% @doc Tell if `String' conforms the NAMEPREP stringprep profile.
 
 -spec is_name
-(binary() | string()) -> bool().
+(binary() | string()) -> boolean().
 
 is_name(<<>>) ->
     false;
@@ -207,13 +207,13 @@ is_name(String) ->
             false
     end.
 
-%% @spec (String) -> bool()
+%% -spec (String) -> boolean()
 %%     String = binary() | string()
 %% @throws {stringprep, resourceprep, exmpp_not_started, String}
 %% @doc Tell if `String' conforms the RESOURCEPREP stringprep profile.
 
 -spec is_resource
-(binary() | string()) -> bool().
+(binary() | string()) -> boolean().
 
 is_resource(<<>>) ->
     false;
@@ -228,7 +228,7 @@ is_resource(String) ->
             false
     end.
 
-%% @spec (String) -> Lowered_String
+%% -spec (String) -> Lowered_String
 %%     String = binary() | string()
 %%     Lowered_String = binary() | string()
 %% @throws {stringprep, lowercase, exmpp_not_started, String} |

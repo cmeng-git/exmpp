@@ -37,7 +37,7 @@
 %% Feature announcement.
 %% --------------------------------------------------------------------
 
-%% @spec () -> Feature
+%% -spec () -> Feature
 %%     Feature = exmpp_xml:xmlel()
 %% @doc Make a feature announcement child.
 %%
@@ -52,7 +52,7 @@ feature() ->
 %% Resource binding.
 %% --------------------------------------------------------------------
 
-%% @spec (IQ) -> Resource | undefined
+%% -spec (IQ) -> Resource | undefined
 %%     IQ = exmpp_xml:xmlel()
 %%     Resource = string()
 %% @throws {resource_binding, wished_resource, invalid_bind, IQ}
@@ -80,7 +80,7 @@ wished_resource(IQ) when ?IS_IQ(IQ) ->
 wished_resource(Stanza) ->
     throw({resource_binding, wished_resource, invalid_bind, Stanza}).
 
-%% @spec (IQ, Jid) -> Reply
+%% -spec (IQ, Jid) -> Reply
 %%     IQ = exmpp_xml:xmlel()
 %%     Jid = exmpp_jid:jid()
 %%     Reply = exmpp_xml:xmlel()
@@ -98,7 +98,7 @@ bind(IQ, Jid) when ?IS_IQ(IQ) ->
 		 },
     exmpp_iq:result(IQ, Bind).
 
-%% @spec (IQ, Condition) -> Error_IQ
+%% -spec (IQ, Condition) -> Error_IQ
 %%     IQ = exmpp_xml:xmlel()
 %%     Condition = atom()
 %%     Error_IQ = exmpp_xml:xmlel()

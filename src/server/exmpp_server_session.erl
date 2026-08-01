@@ -37,7 +37,7 @@
 %% Feature announcement.
 %% --------------------------------------------------------------------
 
-%% @spec () -> Feature
+%% -spec () -> Feature
 %%     Feature = exmpp_xml:xmlel()
 %% @doc Make a feature annoucement child.
 %%
@@ -52,7 +52,7 @@ feature() ->
 %% Session establishment.
 %% --------------------------------------------------------------------
 
-%% @spec (IQ) -> bool()
+%% -spec (IQ) -> boolean()
 %%     IQ = exmpp_xml:xmlel()
 %% @doc Tell if the initiating entity wants to establish a session.
 
@@ -69,7 +69,7 @@ want_establishment(IQ) when ?IS_IQ(IQ) ->
 want_establishment(_Stanza) ->
     false.
 
-%% @spec (IQ) -> Result_IQ
+%% -spec (IQ) -> Result_IQ
 %%     IQ = exmpp_xml:xmlel()
 %%     Result_IQ = exmpp_xml:xmlel()
 %% @doc Prepare a result IQ to inform the initiating entity that the
@@ -78,7 +78,7 @@ want_establishment(_Stanza) ->
 establish(IQ) when ?IS_IQ(IQ) ->
     exmpp_iq:result(IQ).
 
-%% @spec (IQ, Condition) -> Error_IQ
+%% -spec (IQ, Condition) -> Error_IQ
 %%     IQ = exmpp_xml:xmlel()
 %%     Condition = atom()
 %%     Error_IQ = exmpp_xml:xmlel()

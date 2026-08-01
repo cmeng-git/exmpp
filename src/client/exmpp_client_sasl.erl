@@ -43,7 +43,7 @@
 %% Feature announcement.
 %% --------------------------------------------------------------------
 
-%% @spec (Features_Announcement) -> Mechanisms
+%% -spec (Features_Announcement) -> Mechanisms
 %%     Features_Announcement = exmpp_xml:xmlel()
 %%     Mechanisms = [string()]
 %% @throws {sasl, announced_mechanisms, invalid_feature, Feature} |
@@ -78,7 +78,7 @@ announced_mechanisms3([], Result) ->
 %% SASL exchange.
 %% --------------------------------------------------------------------
 
-%% @spec (Mechanism) -> Auth
+%% -spec (Mechanism) -> Auth
 %%     Mechanism = string()
 %%     Auth = exmpp_xml:xmlel()
 %% @doc Prepare an `<auth/>' element with the selected mechanism.
@@ -90,7 +90,7 @@ selected_mechanism(Mechanism) ->
      },
     exmpp_xml:set_attribute(El, <<"mechanism">>, Mechanism).
 
-%% @spec (Mechanism, Initial_Response) -> Auth
+%% -spec (Mechanism, Initial_Response) -> Auth
 %%     Mechanism = string()
 %%     Initial_Response = string()
 %%     Auth = exmpp_xml:xmlel()
@@ -105,7 +105,7 @@ selected_mechanism(Mechanism, Initial_Response) ->
     El = selected_mechanism(Mechanism),
     exmpp_xml:set_cdata(El, base64:encode_to_string(Initial_Response)).
 
-%% @spec (Response_Data) -> Response
+%% -spec (Response_Data) -> Response
 %%     Response_Data = string()
 %%     Response = exmpp_xml:xmlel()
 %% @doc Prepare a `<response/>' element to send the challenge's response.
@@ -119,7 +119,7 @@ response(Response_Data) ->
      },
     exmpp_xml:set_cdata(El, base64:encode_to_string(Response_Data)).
 
-%% @spec () -> Abort
+%% -spec () -> Abort
 %%     Abort = exmpp_xml:xmlel()
 %% @doc Make a `<abort/>' element.
 
@@ -129,7 +129,7 @@ abort() ->
        name = 'abort'
       }.
 
-%% @spec (El) -> Type
+%% -spec (El) -> Type
 %%     El = exmpp_xml:xmlel()
 %%     Type = Challenge | Success | Failure
 %%     Challenge = {challenge, string()}
